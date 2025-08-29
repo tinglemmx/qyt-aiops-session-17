@@ -31,7 +31,7 @@ def format_print(asa_dict):
     src = 'src'
     src_port = 'src_port'
     dst = 'dst'
-    dst_port = 'src_port'
+    dst_port = 'dst_port'
     bytes_name = 'bytes'
     flags = 'flags'
     
