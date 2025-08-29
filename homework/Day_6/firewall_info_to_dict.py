@@ -27,7 +27,7 @@ def firewall_info_to_dict(string):
     return asa_dict
                 
 def format_print(asa_dict):
-    print("格式化打印输出")
+    print("格式化打印输出\n")
     src = 'src'
     src_port = 'src_port'
     dst = 'dst'
