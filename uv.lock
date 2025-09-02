@@ -1,0 +1,20 @@
+version = 1
+revision = 3
+requires-python = ">=3.11"
+
+[[package]]
+name = "kamene"
+version = "0.32"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/eb/81f007c1fa60fc83f76a9902af21da903f2b5f073bc287637df0bb31335e/kamene-0.32.tar.gz", hash = "sha256:54fd94db09ca3c7a7f1ef38276a83f01905dce9801de84797a0f00b3c99434da", size = 2215536, upload-time = "2018-05-28T19:12:43.699Z" }
+
+[[package]]
+name = "qyt-aiops-session-17"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "kamene" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "kamene", specifier = ">=0.32" }]
