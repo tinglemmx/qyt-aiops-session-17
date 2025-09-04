@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "external_libs/qyt_libs" 
+    ]
+}
