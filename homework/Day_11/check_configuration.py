@@ -11,7 +11,9 @@ from qyt_libs import qytang_ssh
 
 def qytang_get_config(ip, username, password,port=22):
     result = qytang_ssh(ip, username, password, port, 'vbash -ic "show configuration commands | no-more"')
-    return result
+    result_lit = result.split('\n')
+    index = next((i for i, s in enumerate(result_lit) if "set system host-name" in s), -1)
+    return '\n'.join(result_lit[index:])
 
 def qytang_check_diff(ip,username, password,port=22):
     first_time = True
