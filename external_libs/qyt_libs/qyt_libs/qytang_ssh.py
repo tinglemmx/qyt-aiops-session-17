@@ -7,6 +7,7 @@ def qytang_ssh(ip, user, passwd, port=22, cmd='ls -1'):
         client.connect(ip, port=port, username=user, password=passwd,
                        timeout=5, compress=True)
         stdin, stdout, stderr = client.exec_command(cmd)
+        stdout.channel.recv_exit_status()
         result = stdout.read().decode()
         return result.strip() + '\n\n'
     finally:
