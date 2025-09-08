@@ -23,7 +23,6 @@ def qyang_multicmd(ip, username, password,cmd_list:list, port=22, enable='',wait
             chan.send( "exit\n")
             break
 
-
     chan.close()
     client.close()
     
@@ -42,7 +41,7 @@ if __name__ == '__main__':
     cmd_list2 = [
                 'show ip ospf neighbor | no-more',
                 'show ip ospf route | no-more'
-    ]
+                ]
     qyang_multicmd('172.17.9.216', 'vyos', 'vyos',cmd_list1)
-    time.sleep(5)
+    time.sleep(15) # 等待OSPF邻居建立
     qyang_multicmd('172.17.9.216', 'vyos', 'vyos',cmd_list2)
