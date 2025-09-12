@@ -72,7 +72,7 @@ def run_config_backup(ip,username, password,port=22):
         last_config_hash_after_save = get_last_config_hash(session_check)
     print(f"本次采集的HASH：{last_config_hash_after_save}")
     if last_config_hash_before_save != last_config_hash_after_save:
-        print(f"{'='*10}配置有变化{'='*10}")
+        print(f"{'='*10}配置发生变化{'='*10}")
         print(f"{' '*4}{'THE MOST RECENT HASH':<24}:{last_config_hash_after_save}")
         print(f"{' '*4}{'THE LAST HASH':<24}:{last_config_hash_before_save}")
         
