@@ -4,9 +4,8 @@ import logging
 
 logging.getLogger("kamene.runtime").setLevel(logging.ERROR)
 
-from kamene.all import IP, ICMP, sr1
-
 def build_icmp_packet(target, src_address=None, payload=b'A'):
+    from kamene.all import IP, ICMP
     if src_address:
         ip_layer = IP(src=src_address, dst=target)
     else:
@@ -15,6 +14,7 @@ def build_icmp_packet(target, src_address=None, payload=b'A'):
     pkt = ip_layer/ICMP()/payload
     return pkt
 def qytang_ping(target: str,src_address = None, timeout: int = 2):
+    from kamene.all import sr1
     pkt = build_icmp_packet(target, src_address)
     start_time = time.time()
     reply = sr1(pkt, timeout=timeout, verbose=0) 
