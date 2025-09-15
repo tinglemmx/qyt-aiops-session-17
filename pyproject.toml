@@ -9,6 +9,7 @@ dependencies = [
     "paramiko>=4.0.0",
     "pyinstaller>=6.15.0",
     "qyt-libs",
+    "scapy>=2.6.1",
     "sqlalchemy>=2.0.43",
 ]
 
