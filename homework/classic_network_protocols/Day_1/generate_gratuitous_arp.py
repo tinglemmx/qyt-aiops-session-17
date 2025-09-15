@@ -1,4 +1,3 @@
-import logging
 from kamene.layers.l2 import Ether, ARP
 from kamene.sendrecv import sendp
 
