@@ -8,6 +8,8 @@ from write_db_ssh import CpuMemData  # 导入write_db_ssh定义的数据库模�
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib import dates,ticker
+from matplotlib.ticker import MultipleLocator
+from matplotlib.dates import AutoDateLocator, DateFormatter
 from datetime import datetime,timedelta
 from random import random,choice
 
@@ -90,6 +92,12 @@ def draw_line_chart(
     ax.xaxis.set_major_formatter(dates.DateFormatter( "%H:%M"))
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%3.1f%%"))
     ax.set_ylim(ymin=0, ymax=100)
+    fig.autofmt_xdate() # 自动旋转，避免重叠
+    locator = AutoDateLocator(minticks=13, maxticks=20)  # 控制最少和最多显示的刻度数
+    ax.xaxis.set_major_locator(locator)
+    ax.yaxis.set_major_locator(MultipleLocator(10))  # 每10%一个刻度
+
+
     
     plt.title(title)
     plt.xlabel(x_label)
