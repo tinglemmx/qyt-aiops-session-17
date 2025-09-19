@@ -7,8 +7,10 @@ from sqlalchemy import Column, Integer, Float, String, DateTime, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-base_dir = Path(__file__).resolve().parent
-
+# base_dir = Path(__file__).resolve().parent
+base_dir = Path.home() / "cpu_monitor"
+base_dir.mkdir(parents=True, exist_ok=True)
+db_path = base_dir / "cpu_mem.db"
 # -----------------------
 # 时区设置
 # -----------------------
@@ -34,7 +36,7 @@ class CpuMemData(Base):
 # -----------------------
 # 创建数据库
 # -----------------------
-engine = create_engine(f'sqlite:///{str(base_dir)}/cpu_mem.db?check_same_thread=False', echo=False)
+engine = create_engine(f'sqlite:///{str(db_path)}?check_same_thread=False', echo=False)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -69,7 +71,7 @@ def collect_and_save():
     session.add(data)
 
     session.commit()
-    print(f"{timestamp}: 保存 CPU {len(cpu_percents)} 核心 + 内存数据成功")
+    print(f"{timestamp}: 保存 CPU {len(cpu_percents)} 核心 + 内存数据成功{str(base_dir / 'cpu_mem.db')}")
 
 def get_device_ip():
     try:
@@ -81,8 +83,8 @@ def get_device_ip():
         ip = "127.0.0.1"
     return ip
 
-# -----------------------
-# 主循环（每隔 5 秒采集一次）
-# -----------------------
 if __name__ == "__main__":
-    collect_and_save()
+    try:
+        collect_and_save()
+    finally:
+        session.close()
