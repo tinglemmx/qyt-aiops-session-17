@@ -12,6 +12,8 @@ dependencies = [
     "paramiko>=4.0.0",
     "psutil>=7.1.0",
     "pyinstaller>=6.15.0",
+    "pysmi>=1.6.2",
+    "pysnmp-mibs>=0.1.6",
     "pytz>=2025.2",
     "qyt-libs",
     "scapy>=2.6.1",

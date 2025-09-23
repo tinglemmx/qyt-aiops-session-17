@@ -10,7 +10,7 @@ rcParams['font.sans-serif'] = ['Noto Sans CJK JP']
 rcParams['axes.unicode_minus'] = False
 
 def draw_line_chart(
-                   line_list:list,
+                   lines_list:list,
                    x_label:str,
                    y_label:str,
                    title:str="折线图"
