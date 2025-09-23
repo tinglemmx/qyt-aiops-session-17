@@ -1,0 +1,16 @@
+算cpu的方法
+SELECT (difference("cpu_total") - difference("cpu_idle_w_iowait")) / difference("cpu_total") * 100
+FROM "router_monitor"
+WHERE $timeFilter
+GROUP BY "device_ip"
+
+算bps的方法
+SELECT NON_NEGATIVE_DERIVATIVE(mean("rx_bytes"), 1s) * 8/1000 AS "rx_bps"
+FROM "router_monitor"
+WHERE $timeFilter
+GROUP BY time($__interval), "device_ip", "interface_name" fill(null)
+
+
+
+ALIAS BY的 格式
+RX:$tag_device_ip:$tag_interface_name
