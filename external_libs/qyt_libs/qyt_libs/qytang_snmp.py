@@ -4,6 +4,7 @@ from pysnmp.hlapi.v3arch.asyncio import *
 from pysnmp.smi.view import MibViewController
 from pysnmp.smi import builder, view
 
+
 class QytangSNMP:
     def __init__(self, ip, community, snmp_port=161, version='v2c'):
         self.ip = ip
@@ -26,7 +27,7 @@ class QytangSNMP:
         errorIndication, errorStatus, errorIndex, varBinds = await iterator
         return result_format(errorIndication, errorStatus, errorIndex, varBinds)
 
-    async def getNext(self, oid_dict_list,lookupMib=False):
+    async def getNext(self, oid_dict_list, lookupMib=False):
         snmpEngine = SnmpEngine()
         errorIndication, errorStatus, errorIndex, varBinds = await next_cmd(
             snmpEngine,
@@ -34,11 +35,11 @@ class QytangSNMP:
             await UdpTransportTarget.create((self.ip, self.snmp_port)),
             ContextData(),
             ObjectType(ObjectIdentity(*oid_dict_list)),
-            lookupMib = lookupMib
+            lookupMib=lookupMib
         )
         return result_format(errorIndication, errorStatus, errorIndex, varBinds)
 
-    async def bulkCmd(self, oid_dict_list, maxRepetitions=10,lookupMib=False):
+    async def bulkCmd(self, oid_dict_list, maxRepetitions=10, lookupMib=False):
         snmpEngine = SnmpEngine()
         errorIndication, errorStatus, errorIndex, varBinds = await bulk_cmd(
             snmpEngine,
@@ -48,7 +49,7 @@ class QytangSNMP:
             0,
             maxRepetitions,
             ObjectType(ObjectIdentity(*oid_dict_list)),
-            lookupMib = lookupMib
+            lookupMib=lookupMib
         )
         return result_format(errorIndication, errorStatus, errorIndex, varBinds)
 
@@ -61,12 +62,13 @@ class QytangSNMP:
         base_oid = oid_object.get_oid()
         return base_oid.prettyPrint()
 
-    def getSubtree(self, oid_dict_list,force_return_oid=False):
+    def getSubtree(self, oid_dict_list, force_return_oid=False):
         base_oid = self.getOID(oid_dict_list)
         tmp_oid_dict_list = oid_dict_list
         result = []
         for _ in range(10):
-            tmp_result = asyncio.run(self.getNext(tmp_oid_dict_list,force_return_oid))
+            tmp_result = asyncio.run(self.getNext(
+                tmp_oid_dict_list, force_return_oid))
             if tmp_result:
                 result += tmp_result
                 tmp_oid = tmp_result[0][0]
@@ -77,7 +79,6 @@ class QytangSNMP:
                 print("由于没有收到数据终止获取信息")
                 break
         return result
-
 
 
 def result_format(errorIndication, errorStatus, errorIndex, varBinds):
