@@ -1,0 +1,11 @@
+{% for interface in data -%}
+{% if interface.interface_name.startswith('eth') -%}
+delete interfaces ethernet {{ interface.interface_name }} address
+set interfaces ethernet {{ interface.interface_name }} address '{{ interface.interface_address }}'
+{% elif interface.interface_name.startswith('lo') -%}
+delete interfaces loopback {{ interface.interface_name }} address
+set interfaces loopback {{ interface.interface_name }} address '{{ interface.interface_address }}'
+{% else -%}
+not supported interface type
+{% endif -%}
+{%- endfor %}

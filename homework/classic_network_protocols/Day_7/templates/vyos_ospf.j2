@@ -1,0 +1,9 @@
+delete protocols ospf
+{% if data.get('router_id') -%}
+set protocols ospf parameters router-id '{{ data.router_id }}'
+{%- endif %}
+{%- if  data.get('ospf_network_list') -%}
+{% for network in data.get('ospf_network_list',[]) %}
+set protocols ospf area {{ network.area }} network {{ network.network }}
+{%- endfor -%}
+{%- endif %}
