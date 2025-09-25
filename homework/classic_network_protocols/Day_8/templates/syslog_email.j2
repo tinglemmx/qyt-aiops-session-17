@@ -1,0 +1,44 @@
+<h2>乾颐堂NetDevOps课程Syslog分析</h2>
+<h4>下面是Syslog严重级别分析! 显示Syslog严重级别与数量</h4>
+    <table border="1" cellspacing="0" style="width:100%">
+            <thead class="thead-dark">
+                <tr>
+                  <th class="text-center">严重级别</th>
+                  <th class="text-center">数量</th>
+                  <th class="text-center">百分比</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for s in severity_level_count_html_list %}
+                    <tr>
+                        <td>{{ s.name }}</td><td>{{ s.log_count }}</td><td>{{ s.percent }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+<h4>下面是Syslog严重级别数据分析饼状图</h4>
+<p>
+<br><img src="cid:{{ severity_level_filename }}" width="400", height=auto></br>
+</p>
+<h4>下面是Syslog发送主机分析! 显示Syslog 发送主机与日志发送数量</h4>
+    <table border="1" cellspacing="0" style="width:100%">
+            <thead class="thead-dark">
+                <tr>
+                  <th class="text-center">日志发送主机</th>
+                  <th class="text-center">日志发送数量</th>
+                  <th class="text-center">百分比</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for d in device_ip_count_html_list %}
+                    <tr>
+                        <td>{{ d.ip }}</td><td>{{ d.log_count }}</td><td>{{ d.percent }}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+<h4>下面是Syslog发送主机与数据分析饼状图</h4>
+<p>
+<br><img src="cid:{{ device_ip_filename }}" width="400", height=auto></br>
+</p>
+<p>
