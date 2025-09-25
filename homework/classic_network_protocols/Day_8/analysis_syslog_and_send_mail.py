@@ -180,14 +180,14 @@ def main():
      # https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode
     send_syslog_report(
         subject="乾颐堂NetDevOps课程Syslog分析",
-*sender="**REMOVED***",
-recipients=["***REMOVED***"],
+        sender="****email****",
+        recipients=["****email****"],
         html_content=html_content,
         image_files=image_files,
         smtp_host="smtp.qq.com",
         smtp_port=587,
-username="***REMOVED***",
-password="***REMOVED***"
+        username="****email****",
+        password="***********"
     )
 
 
