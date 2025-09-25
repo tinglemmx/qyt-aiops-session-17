@@ -51,7 +51,7 @@ class DeviceConfig(Base):
     device_config = Column(String(99999), nullable=False)
     config_md5 = Column(String(100), nullable=False)
     router = relationship('Router', back_populates="device_config", passive_deletes=True)
-    record_time = Column(DateTime(timezone='Asia/Chongqing'), default=datetime.datetime.now)
+    record_time = Column(DateTime(timezone=True), default=datetime.datetime.now(datetime.timezone.utc))
 
     def __repr__(self):
         return f"{self.__class__.__name__}(Device IP: {self.router.ip} " \
