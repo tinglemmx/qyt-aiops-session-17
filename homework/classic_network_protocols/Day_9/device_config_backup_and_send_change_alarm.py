@@ -244,19 +244,20 @@ def generate_config_diff_email(old_config: str, new_config: str, router_name: st
     diff_text = '\n'.join(diff)
     # 邮件正文
     email_body = f"""\
-    设备: {router_name}
+设备: {router_name}
     
-    ==== 配置差异 ====
-    {diff_text}
+==== 配置差异 ====
+
+{diff_text}
     
     """
-    diff_html = f"<pre>{diff_text}</pre>"
+    email_html_body = f"<pre>{email_body}</pre>"
 
     send_report(
         subject=f"设备{router_name},配置异常,具体配置看正文",
         sender="********@qq.com",
         recipients=["********@hotmail.com"],
-        html_content=diff_html,
+        html_content=email_html_body,
         image_files={},
         smtp_host="smtp.qq.com",
         smtp_port=587,
