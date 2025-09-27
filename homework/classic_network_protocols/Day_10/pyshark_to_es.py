@@ -11,7 +11,7 @@ es = Elasticsearch("http://172.17.9.210:9200")
 
 # PCAP 文件路径
 BASE_DIR = Path(__file__).resolve().parent
-PCAP_FILE = BASE_DIR / "testxxx.pcap"
+PCAP_FILE = BASE_DIR / "test.pcapng"
 
 # PyShark 读取 PCAP 数据包
 cap = pyshark.FileCapture(PCAP_FILE, keep_packets=False)  # 不保存包到内存，节省内存

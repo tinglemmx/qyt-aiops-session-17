@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "elasticsearch==7.10.0",
+    "elasticsearch==8.14.0",
     "fonttools>=4.60.0",
     "influxdb>=5.3.2",
     "kamene>=0.32",
