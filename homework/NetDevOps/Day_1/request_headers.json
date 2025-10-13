@@ -1,0 +1,66 @@
+{
+	"requestHeaders": {
+		"headers": [
+			{
+				"name": "Accept",
+				"value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+			},
+			{
+				"name": "Accept-Encoding",
+				"value": "gzip, deflate, br, zstd"
+			},
+			{
+				"name": "Accept-Language",
+				"value": "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2"
+			},
+			{
+				"name": "Connection",
+				"value": "keep-alive"
+			},
+			{
+				"name": "Cookie",
+				"value": "csrftoken=mkTzd9qBohssGYwOkfpM5tBzMsZTwc4X; sessionid=88mme8al872ks581wky1n4ys1mdog83x"
+			},
+			{
+				"name": "Host",
+				"value": "qytsystem.qytang.com"
+			},
+			{
+				"name": "Priority",
+				"value": "u=0, i"
+			},
+			{
+				"name": "Referer",
+				"value": "https://qytsystem.qytang.com/python_enhance/python_enhance_calendar_detail/2025_10_13-NetDevOps"
+			},
+			{
+				"name": "Sec-Fetch-Dest",
+				"value": "document"
+			},
+			{
+				"name": "Sec-Fetch-Mode",
+				"value": "navigate"
+			},
+			{
+				"name": "Sec-Fetch-Site",
+				"value": "same-origin"
+			},
+			{
+				"name": "Sec-Fetch-User",
+				"value": "?1"
+			},
+			{
+				"name": "TE",
+				"value": "trailers"
+			},
+			{
+				"name": "Upgrade-Insecure-Requests",
+				"value": "1"
+			},
+			{
+				"name": "User-Agent",
+				"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0"
+			}
+		]
+	}
+}

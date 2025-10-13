@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+   
+    <link rel="shortcut icon" href="https://qytsystem.qytang.com/static/files/images/favicon.ico">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+
+
+    <!-- Bootstrap CSS -->
+
+    <link rel="stylesheet" href="https://qytsystem.qytang.com/static/files/css/bootstrap.min.css">
+
+    <title>
+    乾頤堂Python强化班系统
+</title>
+    
+    <link rel="stylesheet" href="https://qytsystem.qytang.com/static/files/css/font-awesome.min.css">
+
+  </head>
+  
+  <body>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script src="https://qytsystem.qytang.com/static/files/js/jquery-3.3.1.slim.min.js"></script>
+
+
+    <script src="https://qytsystem.qytang.com/static/files/js/popper.min.js"></script>
+
+
+    <script src="https://qytsystem.qytang.com/static/files/js/bootstrap.min.js"></script>
+
+    <!-- ajax 必须加载下面的JS -->
+
+    <script src="https://qytsystem.qytang.com/static/files/js/jquery-3.1.1.min.js"></script>
+    
+    
+
+
+    
+        
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+               
+                <a href="/" class="float-left"><img src="https://qytsystem.qytang.com/static/files/images/logo_long_new.png" height="50" width=auto></a>
+
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                  
+                      
+                        <li class="nav-item active">
+                            <a class="nav-link" href=/python_enhance/python_enhance_home>主页</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_semester>本期课程介绍</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_week_top>Python周排行榜(TOP20)</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_calendar>课程日历</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_homework>作业信息</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_preparation>视频与资料</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_self_data>个人数据</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_wall_of_fame>荣誉墙</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_continue_to_service>继续服务</a>
+                        </li>
+                      
+                  
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href=/python_enhance/python_enhance_score_rules>积分规则</a>
+                        </li>
+                      
+                  
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                      
+                      
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Python强化胡嘉祺</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/accounts/logout">登出</a>
+                        </li>
+                      
+                </ul>
+              </div>
+            </nav>
+        
+        
+    <div class="container-fluid">
+        
+            <br><h2 style="color: #666666">乾頤堂Python强化班内部系统</h2>
+<div class="row py-2">
+    <div class="col-md-3 py-1">
+        <div class="card h-100">
+        <div class="card-header"><p class="font-weight-bold"><i class="icon-signal" style="color: red"></i>  您的学习综合评分</p></div>
+            <div class="card-body">
+                <h1 style="color: red">65.5分</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 py-1">
+        <div class="card h-100">
+        <div class="card-header"><p class="font-weight-bold"><i class="icon-signal" style="color: red"></i>  积分排行榜</p></div>
+            <div class="card-body">
+                <table class="table table-bordered" id="myTable_Top5">
+                  <tbody id ="myTable_Top5">
+                    
+                    <tr>
+                      
+                          <th scope="row" align="center" valign="center" style="color:gold">1</th>
+                          <td align="center" valign="center" style="color:gold"><i class="icon-trophy"></i><strong>Python强化张鹏展</strong></td>
+                          <td align="center" valign="center" style="color:gold"><strong>70.4</strong></td>
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                          <th scope="row" align="center" valign="center" style="color:#C0C0C0">2</th>
+                          <td align="center" valign="center" style="color:#C0C0C0"><i class="icon-trophy"><strong>Python强化李畅</strong></td>
+                          <td align="center" valign="center" style="color:#C0C0C0"><strong>69.6</strong></td>
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                          <th scope="row" align="center" valign="center" >3</th>
+                          <td align="center" valign="center" style="color:#AD6F69"><i class="icon-trophy"><strong>Python强化管中屿</strong></td>
+                          <td align="center" valign="center" style="color:#AD6F69"><strong>66.2</strong></td>
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                          <th scope="row" align="center" valign="center" >4</th>
+                          <td align="center" valign="center" style="color:black"><strong>Python强化胡嘉祺</strong></td>
+                          <td align="center" valign="center" style="color:black"><strong>65.5</strong></td>
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                          <th scope="row" align="center" valign="center" >5</th>
+                          <td align="center" valign="center" style="color:black"><strong>Python强化唐玉柱</strong></td>
+                          <td align="center" valign="center" style="color:black"><strong>62.9</strong></td>
+                      
+                    </tr>
+                    
+                  </tbody>
+                </table>
+            <br><br><br>
+                    <p class="card-text" style="color: blueviolet"><strong style="color: red">注意:最终排行榜前三有教主颁发的水晶牌!</strong></p>
+                    <p>要成为最终的胜利者! 关键因素是每日任务的完成数量!</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 py-1">
+        <div class="card h-100">
+            <div class="card-header"><p class="font-weight-bold"><i class="icon-check" style="color: red"></i></i>  您的每日任务</p></div>
+            <div class="card-body">
+                    <table class="table table-bordered" id="myTable_dahuangfeng">
+                      <tbody id ="myTable_dahuangfeng">
+                      <tr>
+                      
+                            <th scope="row" align="center" valign="center" width="30%">加密视频达标(2次)</th>
+                        
+                        
+                            <td align="center" valign="center" width="10%">0</td>
+                        
+
+
+                          
+                                  <td align="center" valign="center">
+                                      <div class="progress">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 0.0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">0.0%</div>
+                                      </div>
+                                  </td>
+                          
+                      </tr>
+                      <tr>
+                      
+                            <th scope="row" align="center" valign="center" width="30%">作业达标(一份A|A-)</th>
+                        
+                        
+                            <td align="center" valign="center" width="10%">0</td>
+                        
+                        
+                                  <td align="center" valign="center">
+                                      <div class="progress">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 0.0%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">0.0%</div>
+                                      </div>
+                                  </td>
+                          
+                      </tr>
+                      </tbody>
+                    </table>
+                <br><br><br><br><br>
+                <p class="card-text" style="color: blueviolet"><strong>加密视频<strong style="color:red;">[非在线与明文视频]</strong>登录记录每一个小时刷新一次！作业为实时刷新！</strong></p>
+                <p class="card-text" style="color: #c69500"><strong>你的大黄蜂用户名为<strong style="color: red">pye_hujq</strong>!你上一次视频登录时间是2025-10-02 13:06:28！如果长期没有视频登录记录！你可以尝试注销一下大黄蜂重新登录一次！</strong></p>
+                <p class="card-text" style="color: yellowgreen"><strong>只有同时满足上面两个条件才能在今晚被脚本加1分<a href="/python_enhance/python_enhance_score_rules">  积分规则</a></strong></p>
+                <p class="card-text"><strong>【每日任务】【视频达标】统计规则： 登陆，看一集算作一分，看完后记得重新注销登陆。 （登陆一次，看多集课程只被系统记一分）</strong></p>
+
+                
+                    <p class="card-text" style="color: blue">你上一次完成每日任务在 2025-09-28</p>
+                
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 py-1">
+        <div class="card h-100">
+            <div class="card-header"><p class="font-weight-bold"><i class="icon-check" style="color: red"></i></i>  昨日完成每日任务名单</p></div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="myTable_zuoriwancheng" frame=void rules=none>
+                      <tbody id ="myTable_myTable_zuoriwancheng">
+                      
+                        <tr>
+                            <td>Python强化李畅</td>
+                        <tr>
+                        
+                        <tr>
+                            <td>Python强化杨冬青</td>
+                        <tr>
+                        
+                      </tbody>
+                    </table>
+                <br><br><br>
+                    <p class="card-text" style="color: blueviolet"><strong style="color: red">完成<a href="/python_enhance/python_enhance_score_rules">每日任务</a>的小心机:</strong></p>
+                    <p>教主一般每晚9点做最后一次作业检查! 如果你想完成每日任务就需要尽量在9点之前上交一份A或A-的作业.如果错过9点! <strong style="color: #f1b0b7">当天交! 会错过一次每日任务机会! 积分以系统为准, 教主不负责补分! </strong>  所以建议第二天凌晨之后交作业! </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row py-2">
+            <div class="col-md-4 py-1">
+                <div class="card h-150">
+                    <div class="card-header"><p class="font-weight-bold"><i class="icon-book" style="color: red"></i>  Top 5 作业</p></div>
+                    <div class="card-body">
+                        
+                        <table class="table table-bordered" id="myTable_anyconnect">
+
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">排名</th>
+          <th scope="col">姓名</th>
+          <th scope="col">上交作业份数(A)</th>
+          <th scope="col">上交作业份数</th>
+        </tr>
+      </thead>
+      <tbody id ="myTable_anyconnect">
+        
+        <tr>
+          
+              <th scope="row" align="center" valign="center" style="color:gold">1</th>
+              <td align="center" valign="center" style="color:gold"><i class="icon-trophy"></i><strong>Python强化李畅</strong></td>
+              <td align="center" valign="center" style="color:gold"><strong>27</strong></td>
+              <td align="center" valign="center" style="color:gold"><strong>27</strong></td>
+          
+        
+        <tr>
+          
+              <th scope="row" align="center" valign="center" style="color:#C0C0C0">2</th>
+              <td align="center" valign="center" style="color:#C0C0C0"><i class="icon-trophy"></i><strong>Python强化张鹏展</strong></td>
+              <td align="center" valign="center" style="color:#C0C0C0"><strong>26</strong></td>
+              <td align="center" valign="center" style="color:#C0C0C0"><strong>26</strong></td>
+          
+        
+        <tr>
+          
+              <th scope="row" align="center" valign="center" >3</th>
+              <td align="center" valign="center" style="color:#AD6F69"><i class="icon-trophy"></i><strong>Python强化管中屿</strong></td>
+              <td align="center" valign="center" style="color:#AD6F69"><strong>26</strong></td>
+              <td align="center" valign="center" style="color:#AD6F69"><strong>26</strong></td>
+          
+        
+        <tr>
+          
+              <th scope="row" align="center" valign="center" >4</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化谢振华</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>26</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>26</strong></td>
+          
+        
+        <tr>
+          
+              <th scope="row" align="center" valign="center" >5</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化唐玉柱</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>26</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>26</strong></td>
+          
+        
+      </tbody>
+
+    </table>
+      
+          <p class="card-text" style="color: blue">你排名英雄榜第:6位</p>
+      
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 py-1">
+                <div class="card h-150">
+                    <div class="card-header"><p class="font-weight-bold"><i class="icon-facetime-video" style="color: red"></i>  Top 5 视频</p></div>
+                    <div class="card-body">
+                        
+                        <table class="table table-bordered" id="myTable_dahuangfeng">
+
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">排名</th>
+          <th scope="col">用户名</th>
+          <th scope="col">视频观看次数</th>
+        </tr>
+      </thead>
+      <tbody id ="myTable_dahuangfeng">
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:gold">1</th>
+                <td align="center" valign="center" style="color:gold"><i class="icon-trophy"></i><strong>Python强化王靖博</strong></td>
+              <td align="center" valign="center" style="color:gold"><strong>313</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:#C0C0C0">2</th>
+              <td align="center" valign="center" style="color:#C0C0C0"><i class="icon-trophy"></i><strong>Python强化胡嘉祺</strong></td>
+              <td align="center" valign="center" style="color:#C0C0C0"><strong>124</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:#AD6F69">3</th>
+              <td align="center" valign="center" style="color:#AD6F69"><i class="icon-trophy"></i><strong>Python强化张鹏展</strong></td>
+              <td align="center" valign="center" style="color:#AD6F69"><strong>107</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center">4</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化李畅</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>101</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center">5</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化杨冬青</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>77</strong></td>
+          
+        
+      </tbody>
+    </table>
+    
+          <p class="card-text" style="color: blue">你排名英雄榜第:2位</p>
+      
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 py-1">
+                <div class="card h-150">
+                    <div class="card-header"><p class="font-weight-bold"><i class="icon-star" style="color: red"></i>  Top 5 每日任务</p></div>
+                    <div class="card-body">
+                        
+                        <table class="table table-bordered" id="myTable_dahuangfeng">
+
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">排名</th>
+          <th scope="col">用户名</th>
+          <th scope="col">完成每日任务次数</th>
+        </tr>
+      </thead>
+      <tbody id ="myTable_dahuangfeng">
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:gold">1</th>
+              <td align="center" valign="center" style="color:gold"><i class="icon-trophy"></i><strong>Python强化李畅</strong></td>
+              <td align="center" valign="center" style="color:gold"><strong>26</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:#C0C0C0">2</th>
+              <td align="center" valign="center" style="color:#C0C0C0"><i class="icon-trophy"></i><strong>Python强化张鹏展</strong></td>
+              <td align="center" valign="center" style="color:#C0C0C0"><strong>25</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center" style="color:#AD6F69">3</th>
+              <td align="center" valign="center" style="color:#AD6F69"><i class="icon-trophy"></i><strong>Python强化管中屿</strong></td>
+              <td align="center" valign="center" style="color:#AD6F69"><strong>24</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center">4</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化唐玉柱</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>22</strong></td>
+          
+        
+        <tr>
+            
+              <th scope="row" align="center" valign="center">5</th>
+              <td align="center" valign="center" style="color:black"><strong>Python强化李文钊</strong></td>
+              <td align="center" valign="center" style="color:black"><strong>21</strong></td>
+          
+        
+      </tbody>
+    </table>
+    
+          <p class="card-text" style="color: blue">你排名英雄榜第:6位</p>
+      
+                    </div>
+                </div>
+            </div>
+</div>
+
+        
+    </div>
+
+    
+  </body>
+      <!-- Footer -->
+<footer class="footer font-small">
+
+  <!-- Copyright -->
+  <div class="footer-copyright text-center py-3">© 2024 Copyright: 现任明教教主乾颐堂</a>
+  </div>
+  <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+
+</html>
