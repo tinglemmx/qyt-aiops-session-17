@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "bs4>=0.0.2",
     "elasticsearch==8.14.0",
+    "fastapi>=0.119.0",
     "flask>=3.1.2",
     "flask-jsonrpc>=3.0.1",
     "fonttools>=4.60.0",
@@ -26,6 +27,7 @@ dependencies = [
     "qyt-libs",
     "scapy>=2.6.1",
     "sqlalchemy>=2.0.43",
+    "uvicorn>=0.37.0",
 ]
 
 [tool.uv.workspace]

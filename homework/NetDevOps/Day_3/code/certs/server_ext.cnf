@@ -1,0 +1,6 @@
+[ v3_req ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+IP.1 = 172.17.102.12
+DNS.1 = myserver.local
