@@ -25,6 +25,7 @@ dependencies = [
     "pysmi>=1.6.2",
     "pysnmp-mibs>=0.1.6",
     "pytz>=2025.2",
+    "pyvmomi>=9.0.0.0",
     "qyt-libs",
     "scapy>=2.6.1",
     "sqlalchemy>=2.0.43",
