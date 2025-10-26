@@ -42,8 +42,8 @@ def get_config():
     else:
         print(data)
 
-    uuid = data.get("uuid")
-    model = data.get("model", "")
+    uuid = data.get("uuid").lower()
+    model = data.get("model", "").lower()
 
     if not uuid:
         return jsonify({"status":"error","msg":"no uuid"}), 400

@@ -1,5 +1,5 @@
-83864f2d-8e44-4644-8837-62e9d1c8c595:
-  model: C8000V
+f48d3804-dfd1-43fe-99c6-3aa5fc376172:
+  model: c8000v
   hostname: C8000V-C97E
   interfaces:
     GigabitEthernet3:
@@ -14,15 +14,15 @@
       - { address: 192.168.10.0, wildcard: 0.0.0.255, area: 0 }
       - { address: 10.10.4.0, wildcard: 0.0.0.255, area: 0 }
 
-C97E58D9-974B-4EDB-A3F9-25B63DBA2B9A:
-  model: CSR1000V
+5d57d2c1-21e3-4387-bebb-1ee2e7a99d42:
+  model: csr1000v
   hostname: CSR1000V-F02E
   interfaces:
     GigabitEthernet3:
       ip: 192.168.20.10
       mask: 255.255.255.0
     GigabitEthernet4:
-      ip: 10.10.4.1
+      ip: 10.10.4.2
       mask: 255.255.255.0
   ospf:
     process_id: 1
