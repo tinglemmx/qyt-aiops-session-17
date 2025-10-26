@@ -1,23 +1,11 @@
-# This script is intended to run on Cisco IOS-XE/C8000v devices that have embedded Python and 'cli' available.
-# It will:
-#  - read hypervisor info and UUID via CLI
-#  - POST {uuid, model} to ZTP server
-#  - get rendered config and apply via cli.configurep
-INVENTORY = """NAME: "Chassis", DESCR: "Cisco CSR1000V Chassis"
-PID: CSR1000V          , VID: V00  , SN: 9FMY5L02HIN
+#!/usr/bin/python3
 
-NAME: "module R0", DESCR: "Cisco CSR1000V Route Processor"
-PID: CSR1000V          , VID: V00  , SN: JAB1303001C
+import json
+import time
 
-NAME: "module F0", DESCR: "Cisco CSR1000V Embedded Services Processor"
-PID: CSR1000V          , VID:      , SN:      """
-SYSTEM_HYPERVISOR = """Hypervisor: KVM
-Manufacturer: QEMU
-Product Name: Standard PC (i440FX + PIIX, 1996)
-Serial Number: Not Specified
-UUID: C97E58D9-974B-4EDB-A3F9-25B63DBA2B9A
-image_variant :
-"""
+ZTP_SERVER = "http://172.17.9.210:8000"
+GET_CONFIG_URL = f"{ZTP_SERVER}/ztp/get_config"
+print("\n\n *** Sample ZTP Day0 Python Script *** \n\n")
 
 try:
     import cli # type: ignore # Cisco 内置模块
@@ -26,106 +14,90 @@ except ImportError:
         @staticmethod
         def cli(cmd):
             print(f"[MOCK] run cli: {cmd}")
-            if cmd == "show inventory":
-                return INVENTORY
-            elif cmd == "show platform software system hypervisor":
-                return SYSTEM_HYPERVISOR
             return ""
         @staticmethod
         def configurep(cmds):
             print("[MOCK] applying config:")
             for c in cmds:
                 print("  ", c)
+
+# --------------------------
+# HTTP POST using urllib
+# --------------------------
 try:
-    import requests
-    import re
-    from typing import Optional, Dict
-    import json
-    import time
-except Exception as e:
-    # On non-device environment, just exit
-    print("This script is for device execution (needs cli module).", e)
+    import urllib.request
+    import urllib.error
+except ImportError:
+    print("urllib not available, cannot fetch remote config.")
     raise SystemExit(1)
 
-ZTP_SERVER = "http://172.17.9.210:8000"
-GET_CONFIG_URL = f"{ZTP_SERVER}/ztp/get_config"
+def post_json(url, data):
+    """POST JSON to server and return parsed JSON response"""
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(data).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST"
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.URLError as e:
+        print("Failed to contact server:", e)
+        return None
+
+# --------------------------
+# Device identity
+# --------------------------
+def parse_show_inventory(output):
+    import re
+    pattern = re.compile(r"PID:\s*(?P<pid>\S+)\s*,\s*VID:\s*(?P<vid>\S*)\s*,\s*SN:\s*(?P<sn>\S*)")
+    match = pattern.search(output)
+    if match:
+        return {"model": match.group("pid"), "serial": match.group("sn")}
+    return {"model": None, "serial": None}
 
 def get_device_identity():
-    """返回 {model, serial, uuid}"""
     identity = {"model": None, "serial": None, "uuid": None}
-
     try:
         inv = cli.cli("show inventory")
         identity.update(parse_show_inventory(inv))
     except Exception:
         pass
-    
+
     try:
-        hyper = cli.cli("show platform software system hypervisor")
-        for line in hyper.splitlines():
+        hyp = cli.cli("show platform software system hypervisor")
+        for line in hyp.splitlines():
             if "UUID:" in line:
                 identity["uuid"] = line.split("UUID:")[1].strip()
     except Exception:
         pass
-
     return identity
+
+# --------------------------
+# Apply configuration
+# --------------------------
 def apply_config_text(config_text):
-    # split lines and feed to configurep
     commands = [ln.strip() for ln in config_text.splitlines() if ln.strip()]
     print("Applying config:")
     for c in commands:
-        print(c)
+        print("  ", c)
     cli.configurep(commands)
-    # save
     cli.cli("write memory")
 
-def parse_show_inventory(output: str) -> Optional[Dict[str, str]]:
-    """
-    解析 Cisco 'show inventory' 输出，提取每个模块的 PID/VID/SN
-
-    :param output: show inventory 命令的完整输出字符串
-    :return: 包含每个模块的字典列表，每个字典含 pid/vid/sn
-    """
-    lines = output.splitlines()
-    chassis_index = None
-    # 找到 NAME: "Chassis" 的行
-    for i, line in enumerate(lines):
-        if 'NAME: "Chassis"' in line:
-            chassis_index = i
-            break
-
-    if chassis_index is None or chassis_index + 1 >= len(lines):
-        return None
-    
-    # 下一行是Chassis PID/VID/SN
-    pid_line = lines[chassis_index + 1]
-    
-    pattern = re.compile(
-        r"PID:\s*(?P<pid>\S+)\s*,\s*VID:\s*(?P<vid>\S*)\s*,\s*SN:\s*(?P<sn>\S*)"
-    )
-
-    match = pattern.search(pid_line)
-    if match:
-        return {
-            "model": match.group("pid"),
-            "serial": match.group("sn")
-        }
-
-    return None
-
+# --------------------------
+# Main
+# --------------------------
 def main():
     identity = get_device_identity()
-    uuid, model = identity["uuid"], identity["model"]
-    if not uuid:
+    if not identity.get("uuid"):
         print("UUID not found via CLI, abort.")
         return
 
-    payload = {"uuid": uuid, "model": model}
-    try:
-        resp = requests.post(GET_CONFIG_URL, json=payload, timeout=10)
-        data = resp.json()
-    except Exception as e:
-        print("Failed to contact server:", e)
+    payload = {"uuid": identity["uuid"], "model": identity["model"]}
+    data = post_json(GET_CONFIG_URL, payload)
+    if not data:
+        print("No response from server, abort.")
         return
 
     if data.get("status") != "ok":
@@ -137,7 +109,6 @@ def main():
         apply_config_text(config)
     else:
         print("Empty config returned")
-        
 
 if __name__ == "__main__":
     main()

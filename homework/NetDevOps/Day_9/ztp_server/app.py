@@ -39,27 +39,34 @@ def get_config():
     data = request.get_json(force=True)
     if not data:
         return jsonify({"status":"error","msg":"no json"}), 400
+    else:
+        print(data)
 
     uuid = data.get("uuid")
-    model = data.get("model", "").lower()
+    model = data.get("model", "")
 
     if not uuid:
         return jsonify({"status":"error","msg":"no uuid"}), 400
 
     db = load_db()
     dev = db.get(uuid)
+    print("Device data:", dev)
     if not dev:
         # 可选择基于 model 动态生成，也可以直接返回 404
         return jsonify({"status":"error","msg":"device not found"}), 404
 
     # 选择模板：优先按 model 小写文件名找模板
-    tpl_name = f"{dev.get('model','generic').lower()}.j2"
+    if model == dev.get('model','generic'):
+        tpl_name = f"{model}.j2"
+    else:
+        return jsonify({"status":"error","msg":f"device model {model} not found"}), 404
     try:
         tpl = env.get_template(tpl_name)
     except Exception as e:
         return jsonify({"status":"error","msg":f"template {tpl_name} not found"}), 500
 
     rendered = tpl.render(**dev)
+    print("rendered:",rendered)
     return jsonify({"status":"ok","config": rendered})
 
 if __name__ == "__main__":

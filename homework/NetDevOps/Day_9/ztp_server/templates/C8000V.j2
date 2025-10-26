@@ -1,0 +1,15 @@
+! Template for C8000v
+hostname {{ hostname }}
+!
+
+{% for iface, data in interfaces.items() %}
+interface {{ iface }}
+ ip address {{ data.ip }} {{ data.mask }}
+ no shutdown
+!
+{% endfor %}
+
+router ospf {{ ospf.process_id }}
+{% for net in ospf.networks %}
+ network {{ net.address }} {{ net.wildcard }} area {{ net.area }}
+{% endfor %}

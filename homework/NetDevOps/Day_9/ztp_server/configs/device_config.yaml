@@ -1,27 +1,31 @@
-C97E58D9-974B-4EDB-A3F9-25B63DBA2B9A:
-  pid: C8000V
+83864f2d-8e44-4644-8837-62e9d1c8c595:
+  model: C8000V
   hostname: C8000V-C97E
   interfaces:
     GigabitEthernet3:
-      ip: 192.168.10.10/24
+      ip: 192.168.10.10
+      mask: 255.255.255.0
     GigabitEthernet4:
-      ip: 10.10.4.1/24
+      ip: 10.10.4.1
+      mask: 255.255.255.0
   ospf:
     process_id: 1
     networks:
-      - 192.168.10.0/24
-      - 10.10.4.0/24
+      - { address: 192.168.10.0, wildcard: 0.0.0.255, area: 0 }
+      - { address: 10.10.4.0, wildcard: 0.0.0.255, area: 0 }
 
-F02E12AA-22B4-4EEA-89B3-BD2342A5D99B:
-  pid: CSR1000V
+C97E58D9-974B-4EDB-A3F9-25B63DBA2B9A:
+  model: CSR1000V
   hostname: CSR1000V-F02E
   interfaces:
     GigabitEthernet3:
-      ip: 192.168.20.10/24
+      ip: 192.168.20.10
+      mask: 255.255.255.0
     GigabitEthernet4:
-      ip: 10.10.4.1/24
+      ip: 10.10.4.1
+      mask: 255.255.255.0
   ospf:
     process_id: 1
     networks:
-      - 192.168.20.0/24
-      - 10.10.4.0/24
+      - { address: 192.168.20.0, wildcard: 0.0.0.255, area: 0 }
+      - { address: 10.10.4.0, wildcard: 0.0.0.255, area: 0 }
