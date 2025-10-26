@@ -11,6 +11,7 @@ dependencies = [
     "flask>=3.1.2",
     "flask-jsonrpc>=3.0.1",
     "fonttools>=4.60.0",
+    "gunicorn>=23.0.0",
     "influxdb>=5.3.2",
     "kamene>=0.32",
     "matplotlib>=3.10.6",

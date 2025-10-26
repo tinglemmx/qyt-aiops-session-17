@@ -1,0 +1,13 @@
+# Chassis UUID: C97E58D9-974B-4EDB-A3F9-25B63DBA2B9A
+pid: C8000V
+hostname: C8000V-C97E
+interfaces:
+  GigabitEthernet3:
+    ip: 192.168.10.10/24
+  GigabitEthernet4:
+    ip: 10.10.4.1/24
+ospf:
+  process_id: 1
+  networks:
+    - 192.168.10.0/24
+    - 10.10.4.0/24
