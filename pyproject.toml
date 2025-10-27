@@ -6,13 +6,16 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "bs4>=0.0.2",
+    "deepdiff>=8.6.1",
     "elasticsearch==8.14.0",
     "fastapi>=0.119.0",
     "flask>=3.1.2",
     "flask-jsonrpc>=3.0.1",
     "fonttools>=4.60.0",
+    "genie>=25.9",
     "gunicorn>=23.0.0",
     "influxdb>=5.3.2",
+    "jsondiff>=2.2.1",
     "kamene>=0.32",
     "matplotlib>=3.10.6",
     "ncclient>=0.7.0",
@@ -21,6 +24,7 @@ dependencies = [
     "paramiko>=4.0.0",
     "psutil>=7.1.0",
     "psycopg2-binary>=2.9.10",
+    "pyats>=25.9",
     "pyinstaller>=6.15.0",
     "pyshark>=0.6",
     "pysmi>=1.6.2",
@@ -30,6 +34,8 @@ dependencies = [
     "qyt-libs",
     "scapy>=2.6.1",
     "sqlalchemy>=2.0.43",
+    "unicon-plugins>=25.9",
+    "unicon[cisco]>=25.9",
     "uvicorn>=0.37.0",
     "xmltodict>=1.0.2",
 ]

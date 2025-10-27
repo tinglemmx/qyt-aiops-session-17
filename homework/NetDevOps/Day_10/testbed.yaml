@@ -1,0 +1,25 @@
+devices:
+  csr1:
+    os: iosxe
+    type: router
+    connections:
+      cli:
+        protocol: ssh
+        ip: 172.17.9.215
+    credentials:
+      default:
+        username: cisco
+        password: cisco
+        timeout: 60  # 秒
+  csr2:
+    os: iosxe
+    type: router
+    connections:
+      cli:
+        protocol: ssh
+        ip: 172.17.9.216
+        timeout: 60  # 秒
+    credentials:
+      default:
+        username: cisco
+        password: cisco
