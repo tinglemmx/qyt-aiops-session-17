@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS2022 S3 FULL
+
+Resources:
+  S3Bucket:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: qytang-netdevops-s3-full-2025  # 桶的名字
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      WebsiteConfiguration:  # 静态网站相关配置
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      PublicAccessBlockConfiguration:  # 公共访问阻止策略
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: false      # new 允许新建
+        RestrictPublicBuckets: false  # any 允许任何桶策略
+      VersioningConfiguration:  # 版本控制
+        Status: Enabled  # Enabled | Suspended
+      LifecycleConfiguration:  # 生命周期管理
+        Rules:
+          - Id: LifecycleRule
+#            Prefix: glacier  # 可以控制前缀来精确过滤对象
+            Status: Enabled   # 激活生命周期管理策略
+            ExpirationInDays: 365  # 365天后过期删除对象
+            Transitions:  # 转换策略
+              - TransitionInDays: 60
+                StorageClass: INTELLIGENT_TIERING  # DEEP_ARCHIVE | GLACIER | GLACIER_IR | INTELLIGENT_TIERING | ONEZONE_IA | STANDARD_IA
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+      LoggingConfiguration:  # 日志策略
+        DestinationBucketName: !Ref S3LogBucket  # 日志发送到另外一个S3
+        LogFilePrefix: QYTLogPrefix  # 日志发送到另外一个S3的'QYTLogPrefix'这个目录
+      Tags:
+        - Key: Department
+          Value: AWS2022
+    DependsOn: S3LogBucket  # 要先等待日志S3被创建
+    DeletionPolicy: Retain  # 建议保留, 因为要清空才能删除, CloudFormation没法删除
+
+  WebSiteBucketPolicy:  # 存储桶策略
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-policy.html
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      PolicyDocument:
+        Id: WebSite
+        Version: 2012-10-17
+        Statement:
+          - Sid: WebSiteAccessIndex
+            Effect: Allow
+            Principal: '*'  # Public访问
+            Action: 's3:GetObject'  # Get对象操作
+            Resource: !Join
+              - '' # 使用''(空)把下面的字符串连接(Join)起来
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket
+                - /index.html
+            Condition:
+              StringEquals:  # 更加精细的匹配Tag
+                "s3:ExistingObjectTag/web_file": "http_file"
+
+          - Sid: WebSiteAccessError
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3Bucket
+                - /error.html
+            Condition:
+              StringEquals:
+                "s3:ExistingObjectTag/web_file": "http_file"
+      Bucket: !Ref S3Bucket  # 策略应用到桶
+
+  S3LogBucket:  # 存放日志的桶
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: qytang-aws-s3-log-2025  # 桶名字
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      # 关于ACL的介绍
+      # https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+
+  S3LogBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3LogBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowS3ServerAccessLogsPut
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub arn:aws:s3:::${S3LogBucket}/*
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub arn:aws:s3:::${S3Bucket}
+              StringEquals:
+                aws:SourceAccount: !Sub ${AWS::AccountId}
+          - Sid: AllowS3ServerAccessLogsAclCheck
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !Sub arn:aws:s3:::${S3LogBucket}
+            Condition:
+              ArnLike:
+                aws:SourceArn: !Sub arn:aws:s3:::${S3Bucket}
+              StringEquals:
+                aws:SourceAccount: !Sub ${AWS::AccountId}

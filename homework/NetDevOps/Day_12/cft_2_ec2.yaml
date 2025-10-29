@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Full EC2
+Parameters:  # 参数详细介绍 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+    KeyName: # EC2 SSH 秘钥
+        Type: AWS::EC2::KeyPair::KeyName  # AWS特殊的参数类型(AWS-specific parameter types)
+        # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html#aws-specific-parameter-types
+        Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+        ConstraintDescription: must be the name of an existing EC2 KeyPair  # 对输入约束的描述
+        Default: us-east-1-2023  # 默认值
+
+    NetworkStackName:   # 引用之前的VPC Stack, 可以导入之前Stack导出的参数
+        Type: String    # 类型
+        Description: Name of an active CloudFormation stack that contains the networking resources, such as the subnet and security group, that will be used in this stack.
+        MinLength: 1    # 最小长度
+        MaxLength: 255  # 最大长度
+        AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*$"  # 校验输入的正则表达式
+        Default: EC2VPC # 默认值
+
+    LatestAmiId:
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+        Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
+Resources:
+    EC2ServiceRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            RoleName: AWS2022WebServiceRole
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                    -   Effect: "Allow"  # 允许执行获取安全令牌的操作
+                        Principal:
+                            Service:
+                                - "ec2.amazonaws.com"  # 什么服务可以做获取安全令牌的操作
+                        Action:
+                            - "sts:AssumeRole"  # AWS Security Token Service 获取临时安全令牌的行为
+            Path: /  # Role的放置位置
+            ManagedPolicyArns:  # 权限控制的策略, 下面都是内置策略 [放行得比较宽泛]
+                - arn:aws:iam::aws:policy/AWSCodeCommitFullAccess   # 访问CodeCommit的代码
+                - arn:aws:iam::aws:policy/AmazonS3FullAccess        # 访问S3
+                - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess  # 访问DynamoDB
+                - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess  # 访问CloudWatchLog
+                - arn:aws:iam::aws:policy/AmazonSSMFullAccess       # Systems Manager Agent (SSM Agent) 完整权限 [主要是登录Terminal用]
+
+    EC2InstanceServiceProfile:
+        # Use an instance profile to pass an IAM role to an EC2 instance
+        # the console automatically creates an instance profile with the same name as the role
+        # The console does not create an instance profile for a role that is not associated with Amazon EC2. 只给EC2的Role自动创建Instance Profile
+        Type: "AWS::IAM::InstanceProfile"
+        Properties:
+            InstanceProfileName: AWS2022WebServiceInstanceProfileName
+            Path: /  # Instance Profile的放置位置
+            Roles:   # 可以把多个Role放入到一个Instance Profile
+                - !Ref EC2ServiceRole
+
+    PlacementGroup:
+        # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-placementgroup.html
+        Type: AWS::EC2::PlacementGroup
+        Properties:
+            Strategy: spread  # cluster | partition | spread
+
+    EC2Instance:
+        Type: "AWS::EC2::Instance"
+        Properties:
+            InstanceType: t3.micro  # 实例类型
+            Tenancy: default  # Allowed values: dedicated | default | host
+            PlacementGroupName: !Ref PlacementGroup
+            Tags: # EC2的标签
+                -   Key: Name
+                    Value: EC2Full
+            KeyName: # EC2使用的秘钥名
+                Ref: KeyName
+            UserData: # EC2的UserData
+                # Sub的用法(用法很多, 主要用于替换, 'Fn::Sub without a mapping'这个案例, 有点像fstring)
+                # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
+                "Fn::Base64": !Sub |
+                    #!/bin/bash
+                    sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+                    sudo sed -i 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
+                    sudo sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
+                    sh -c 'echo root:Cisc0123' | sudo chpasswd
+                    sudo service sshd restart
+            # The intrinsic function Ref returns the value of the specified parameter or resource.
+            # !Ref主要用来获取资源<默认>返回的值, 返回的值要查具体资源的文档
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html
+            # 要获取非默认值, 使用 !GetAtt
+            # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html
+            IamInstanceProfile: !Ref EC2InstanceServiceProfile # 关联Instance Profile
+            NetworkInterfaces: # 关联网络接口
+                - NetworkInterfaceId: !Ref NetworkInterface  # 网络接口
+                  DeviceIndex: 0  # 位置
+            ImageId: !Ref LatestAmiId
+
+    NetworkInterface: # EC2调用的网络接口
+        Type: "AWS::EC2::NetworkInterface"
+        Properties:
+            GroupSet: # 关联SecurityGroup
+                - "Fn::ImportValue": !Sub ${NetworkStackName}-EC2SecurityGroup-ID
+            SubnetId: # 关联子网
+                "Fn::ImportValue": !Sub ${NetworkStackName}-EC2Net1-ID
+
+Outputs:
+    InstanceId: # 输出EC2的实例ID
+        Description: InstanceId of the newly created EC2 instance
+        Value: !Ref EC2Instance
+
+    AZ: # 输出EC2的可用区域
+        Description: Availability Zone of the newly created EC2 instance
+        Value: !GetAtt EC2Instance.AvailabilityZone
+
+    PublicIP: # 输出EC2的公网IP
+        Description: Public IP address of the newly created EC2 instance
+        Value: !GetAtt EC2Instance.PublicIp

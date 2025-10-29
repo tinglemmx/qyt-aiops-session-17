@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Cloud Formation script to Create a S3 Bucket
+
+Resources:  
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: test
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+Outputs:
+  TestBucketName:
+    Description: Name of the test bucket
+    Value: !Ref TestBucket

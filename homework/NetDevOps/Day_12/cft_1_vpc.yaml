@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create VPC and Nets For EC2
+
+Resources:
+  # Internet网关
+  InternetGW:
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-internetgateway.html
+      Type: "AWS::EC2::InternetGateway"
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+      DeletionPolicy: Delete  # 删除cloudformation时候的操作, 可选 Retain | Delete | Snapshot
+      Properties:
+          Tags:
+              - Key: Name
+                Value: InternetGW
+  # VPC
+  QYTVPC:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc.html
+    Type: "AWS::EC2::VPC"
+    DeletionPolicy: Delete
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      # Indicates whether the DNS resolution is supported for the VPC.
+      # If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address,
+      # or the reserved IP address at the base of the VPC network range "plus two" succeed.
+      # If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled.
+      # Enabled by default.
+      EnableDnsSupport: true
+      # Indicates whether the instances launched in the VPC get DNS hostnames.
+      # If enabled, instances in the VPC get DNS hostnames; otherwise,
+      # they do not. Disabled by default for nondefault VPCs.
+      EnableDnsHostnames: true
+      # "default": An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.
+      # "dedicated": An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: QYT_EC2_VPC
+
+  # 关联Internet GW到VPC
+  AttachGW:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-gateway-attachment.html
+    # Attaches an internet gateway, or a virtual private gateway to a VPC, enabling connectivity between the internet and the VPC.
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref QYTVPC
+      InternetGatewayId: !Ref InternetGW
+
+  # 网络EC2_Net1
+  EC2Net1:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet.html
+    Type: "AWS::EC2::Subnet"
+    DeletionPolicy: Delete
+    Properties:
+      AvailabilityZone: # 选择第一个（0）AZ
+        # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-select.html
+        # Fn::Select 介绍
+        "Fn::Select":
+          - 0
+          - "Fn::GetAZs": "" # Fn::GetAZs https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getavailabilityzones.html
+      CidrBlock: 10.1.1.0/24
+      # Indicates whether instances launched in this subnet receive a public IPv4 address. The default value is false.
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: EC2Net1
+      VpcId: !Ref QYTVPC
+
+  # 路由表  EC2RouteTable, 关联VPC
+  EC2RouteTable:
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-routetable.html
+      # Specifies a route table for a specified VPC. After you create a route table, you can add routes and associate the table with a subnet
+      Type: "AWS::EC2::RouteTable"
+      Properties:
+          VpcId: !Ref QYTVPC
+          Tags:
+              - Key: Name
+                Value: EC2_Route_Table
+
+  # 关联子网EC2Net1到路由表EC2_Route_Table
+  EC2Net1Association:
+      Type: "AWS::EC2::SubnetRouteTableAssociation"
+      Properties:
+          RouteTableId: !Ref EC2RouteTable
+          SubnetId: !Ref EC2Net1
+
+  # 配置EC2DefaultRoute路由表的默认路由
+  EC2DefaultRoute:
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route.html
+      # Specifies a route in a route table within a VPC.
+      Type: "AWS::EC2::Route"
+      Properties:
+          DestinationCidrBlock: 0.0.0.0/0
+          GatewayId: !Ref InternetGW
+          RouteTableId: !Ref EC2RouteTable
+
+  # 配置SecurityGroup
+  EC2SecurityGroup:
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html
+      Type: "AWS::EC2::SecurityGroup"
+      Properties:
+          GroupName: ec2_sg
+          GroupDescription: Allow HTTP ,HTTPS and SSH
+          VpcId: !Ref QYTVPC
+          SecurityGroupIngress:
+              # SecurityGroupEgress 为出向控制
+              # IpProtocol: "-1" , -1 为放行IP
+              # 协议号 http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
+              # SourceSecurityGroupId 可以源之于其它SG
+              - IpProtocol: tcp
+                FromPort: 443
+                ToPort: 443
+                CidrIp: 0.0.0.0/0
+              - IpProtocol: tcp
+                FromPort: 80
+                ToPort: 80
+                CidrIp: 0.0.0.0/0
+              - IpProtocol: tcp
+                FromPort: 22
+                ToPort: 22
+                CidrIp: 0.0.0.0/0
+          Tags:
+            - Key: Name
+              Value: EC2_SG
+
+Outputs: # 输出内容，并且可以被其他Stack引用
+    # VPCID, 输出名为${AWS::StackName}-VPCID
+    VPCId:
+        Description: VPC ID
+        Value: !Ref QYTVPC
+        Export:
+            Name: !Sub ${AWS::StackName}-VPCID
+
+    # 子网ECSNet1， 输出名为${AWS::StackName}-ECSNet1-ID
+    EC2Net1:
+        Description: The subnet ID of ECSNet1
+        Value: !Ref EC2Net1
+        Export:
+            Name: !Sub ${AWS::StackName}-EC2Net1-ID
+
+    # 安全组， 输出名为${AWS::StackName}-ECSSecurityGroup-ID
+    EC2SecurityGroup:
+        Description: Security Allow HTTP and HTTPS
+        Value: !Ref EC2SecurityGroup
+        Export:
+            Name: !Sub ${AWS::StackName}-EC2SecurityGroup-ID
