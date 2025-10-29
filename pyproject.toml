@@ -26,6 +26,7 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "pyats>=25.9",
     "pyinstaller>=6.15.0",
+    "pynetbox>=7.5.0",
     "pyshark>=0.6",
     "pysmi>=1.6.2",
     "pysnmp-mibs>=0.1.6",

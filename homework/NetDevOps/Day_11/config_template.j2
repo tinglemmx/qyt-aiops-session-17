@@ -1,0 +1,15 @@
+! Device: {{ name }}
+hostname {{ name }}
+!
+{% if ospf_enabled %}
+router ospf 1
+ router-id {{ ospf_router_id }}
+{% endif %}
+!
+{% for intf in interfaces %}
+interface {{ intf.interface_name }}
+ ip address {{ intf.ip_address[0] }} {{ intf.ip_address[1] }}
+ {% if ospf_enabled and intf.get('ospf_area') %}
+ ip ospf 1 area {{ intf.ospf_area }}
+ {% endif %}
+{% endfor %}

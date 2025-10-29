@@ -2880,6 +2880,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pynetbox"
+version = "7.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "packaging" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d3/0b/695021a23c373991d07c1e4cb510287a521318cfc4b29f68ebbecb19fcd2/pynetbox-7.5.0.tar.gz", hash = "sha256:780064c800fb8c079c9828df472203146442ed3dd0b522a28a501204eb00c066", size = 73850, upload-time = "2025-05-20T16:03:03.831Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/b7/a24bc58f0e27f0cd847bf14ffbe9722604f5abe3ec9c12dd8f89cb965be8/pynetbox-7.5.0-py3-none-any.whl", hash = "sha256:ab755a0020c0abb09b4d24c8f8ba89df26f04fa56c35de73302e29a39352f031", size = 35808, upload-time = "2025-05-20T16:03:02.445Z" },
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.4"
 source = { registry = "https://pypi.org/simple" }
@@ -3118,6 +3131,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pyats" },
     { name = "pyinstaller" },
+    { name = "pynetbox" },
     { name = "pyshark" },
     { name = "pysmi" },
     { name = "pysnmp-mibs" },
@@ -3155,6 +3169,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pyats", specifier = ">=25.9" },
     { name = "pyinstaller", specifier = ">=6.15.0" },
+    { name = "pynetbox", specifier = ">=7.5.0" },
     { name = "pyshark", specifier = ">=0.6" },
     { name = "pysmi", specifier = ">=1.6.2" },
     { name = "pysnmp-mibs", specifier = ">=0.1.6" },
