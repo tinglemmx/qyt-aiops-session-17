@@ -1,0 +1,154 @@
+devices:
+  - name: C8Kv1
+    ip: 192.168.1.1
+    host_key_verification: none
+    authgroup: qytadmin
+    protocol: ssh
+    ned_id: cisco-ios-cli-3.8
+    admin_state: unlocked
+    interface:
+      GigabitEthernet:
+        - name: "1"
+          negotiation:
+            auto: True
+          ip:
+            address:
+              primary:
+                address: 192.168.1.1
+                mask: 255.255.255.0
+        - name: "2"
+          negotiation:
+            auto: True
+          ip:
+            address:
+              primary:
+                address: 172.16.1.1
+                mask: 255.255.255.0
+        - name: "3"
+          negotiation:
+            auto: True
+          ip:
+            no-address:
+              address: false
+          shutdown:
+            - null
+        - name: "4"
+          negotiation:
+            auto: True
+          ip:
+            no-address:
+              address: false
+          shutdown:
+            - null
+      Loopback:
+        - name: "0"
+          ip:
+            address:
+              primary:
+                address: 1.1.1.1
+                mask: 255.255.255.0
+#        - name: "1"
+#          ip:
+#            address:
+#              primary:
+#                address: 11.11.11.11
+#                mask: 255.255.255.0
+    router:
+      ospf:
+        - id: 1
+          router-id: 1.1.1.1
+          network:
+            - ip: 172.16.1.0
+              mask: 0.0.0.255
+              area: 0
+            - ip: 1.1.1.1
+              mask: 0.0.0.0
+              area: 0
+#            - ip: 11.11.11.11
+#              mask: 0.0.0.0
+#              area: 0
+    logging:
+      host:
+        - "host": 192.168.1.100
+        - "host": 192.168.1.101
+        - "host": 192.168.1.102
+      trap: 3
+  - name: C8Kv2
+    ip: 192.168.1.2
+    host_key_verification: none
+    authgroup: qytadmin
+    protocol: ssh
+    ned_id: cisco-ios-cli-3.8
+    admin_state: unlocked
+    interface:
+      GigabitEthernet:
+        - name: "1"
+          negotiation:
+            auto: True
+          ip:
+            address:
+              primary:
+                address: 192.168.1.2
+                mask: 255.255.255.0
+        - name: "2"
+          negotiation:
+            auto: True
+          ip:
+            address:
+              primary:
+                address: 172.16.1.2
+                mask: 255.255.255.0
+        - name: "3"
+          negotiation:
+            auto: True
+          ip:
+            no-address:
+              address: false
+          shutdown:
+            - null
+        - name: "4"
+          negotiation:
+            auto: True
+          ip:
+            no-address:
+              address: false
+          shutdown:
+            - null
+      Loopback:
+        - name: "0"
+          ip:
+            address:
+              primary:
+                address: 2.2.2.2
+                mask: 255.255.255.0
+#        - name: "1"
+#          ip:
+#            address:
+#              primary:
+#                address: 22.22.22.22
+#                mask: 255.255.255.0
+    router:
+      ospf:
+        - id: 1
+          router-id: 2.2.2.2
+          network:
+            - ip: 172.16.1.0
+              mask: 0.0.0.255
+              area: 0
+            - ip: 2.2.2.2
+              mask: 0.0.0.0
+              area: 0
+#            - ip: 22.22.22.22
+#              mask: 0.0.0.0
+#              area: 0
+    logging:
+      host:
+        - "host": 192.168.2.100
+        - "host": 192.168.2.101
+        - "host": 192.168.2.102
+      trap: 3
+authgroups:
+  - name: qytadmin
+    remote_name: admin
+    remote_password: Cisc0123
+    remote_secondary_password: Cisc0123

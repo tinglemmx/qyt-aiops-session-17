@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+
+  gitlab-server:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab-server
+    ports:
+      - '8088:8088'
+    environment:
+      GITLAB_ROOT_EMAIL: "admin@test.local"
+      GITLAB_ROOT_PASSWORD: "Abcd@0123456789"
+    volumes:
+      - ./gitlab/config:/etc/gitlab
+      - ./gitlab/data:/var/opt/gitlab

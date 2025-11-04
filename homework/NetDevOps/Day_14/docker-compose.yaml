@@ -1,0 +1,22 @@
+services:
+  NSO-1:
+    image: eagleshockey15/cisco-nso-prod:6.5.4
+    # image: viperbmw69/cisco-nso-prod:latest
+    container_name: nso1
+    environment:
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin
+    ports:
+      - "2024:2024"
+      - "8888:8888"
+    volumes:
+      - ${HOME}/nso/packages:/nso/run/packages
+      - ${HOME}/nso/logs:/log
+      - nso-rvol:/nso
+    healthcheck:
+      test: ["CMD", "ncs_cmd", "-c", "wait-start 2"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  nso-rvol:
