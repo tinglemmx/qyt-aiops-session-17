@@ -1,0 +1,14 @@
+device_hostname: CSR1
+users:
+  - { name: "qytadmin", privilege: 15, secret: "Qyt@12345" }
+  - { name: "otheradmin", privilege: 15, secret: "Other@123" }
+
+interfaces:
+  - { name: "Loopback0", ipv4: "1.1.1.1/24" }
+  - { name: "GigabitEthernet2", ipv4: "61.128.1.254/24" }
+  - { name: "GigabitEthernet3", ipv4: "192.168.1.1/24" }
+  - { name: "GigabitEthernet4", ipv4: "172.17.9.215/24" }
+
+ospf_networks:
+  - { net: "1.1.1.0", wildcard: "0.0.0.255", area: 0 }
+  - { net: "61.128.1.0", wildcard: "0.0.0.255", area: 0 }

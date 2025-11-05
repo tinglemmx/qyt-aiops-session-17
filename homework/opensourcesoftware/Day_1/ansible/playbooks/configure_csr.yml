@@ -1,0 +1,129 @@
+- name: Configure CSR devices
+  hosts: CSR
+  gather_facts: false
+  connection: network_cli
+  tasks:
+    # - name: Dump device variable (debug)
+    #   ansible.builtin.debug:
+    #     msg:
+    #       - "device_hostname={{ device_hostname | default('<<MISSING>>') }}"
+    #       - "inventory_hostname={{ inventory_hostname }}"
+
+    - name: Set hostname
+      cisco.ios.ios_hostname:
+        config:
+          hostname: '{{ device_hostname }}'
+        state: overridden
+
+    - name: Set DNS and domain
+      cisco.ios.ios_system:
+        domain_name: '{{ domain_name }}'
+        name_servers: '{{ dns_servers }}'
+        state: present
+
+    - name: Configure users
+      cisco.ios.ios_user:
+        name: '{{ item.name }}'
+        privilege: '{{ item.privilege }}'
+        configured_password: '{{ item.secret }}'
+        state: present
+      loop: '{{ users }}'
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Get interface status
+      cisco.ios.ios_interfaces:
+        # 不需要配置，只有收集信息
+        state: gathered # 收集接口的状态信息
+      register: interfaces_info
+
+    # - name: Print interface statuses for debugging
+    #   ansible.builtin.debug:
+    #     var: interfaces_info.gathered
+
+    # 生成使用的接口名称的列表
+    - name: Prepare the list of interface names which are used
+      ansible.builtin.set_fact:
+        interface_names_list_used: "{{ interfaces | map(attribute='name') | list }}"
+
+    # # 打印接口名称的列表用于调试
+    # - name: Debug interfaces list
+    #   ansible.builtin.debug:
+    #     var: interface_names_list_used
+
+    - name: Disable unused (down) interfaces
+      cisco.ios.ios_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            enabled: false
+      loop: '{{ interfaces_info.gathered }}'
+      when: item.name not in interface_names_list_used
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Clear L3 setting on unused (down) interfaces
+      cisco.ios.ios_l3_interfaces:
+        config:
+          - name: '{{ item.name }}'
+        state: deleted
+      loop: '{{ interfaces_info.gathered }}'
+      when: item.name not in interface_names_list_used
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Configure interfaces
+      cisco.ios.ios_l3_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            ipv4:
+              - address: '{{ item.ipv4 }}'
+        state: replaced
+      loop: '{{ interfaces }}'
+      loop_control:
+        label: '{{ item.name }}'
+
+    - name: Enable interfaces
+      cisco.ios.ios_interfaces:
+        config:
+          - name: '{{ item.name }}'
+            enabled: true
+        state: replaced
+      loop: '{{ interfaces }}'
+      loop_control:
+        label: 'no shutdown on {{ item.name }}'
+
+    - name: Prepare OSPF Networks Parameters
+      ansible.builtin.set_fact:
+        ospf_network_data: >-
+          {{ ospf_network_data | default([]) + [{'address': item.net, 'wildcard_bits': item.wildcard, 'area': item.area}] }}
+      loop: '{{ ospf_networks }}'
+
+    # - name: Debug OSPF Networks Parameters
+    #   ansible.builtin.debug:
+    #     var: ospf_network_data
+
+    - name: Configure OSPF (structured)
+      cisco.ios.ios_ospfv2:
+        config:
+          processes:
+            - process_id: 1
+              router_id: "{{ (interfaces | selectattr('name', 'match', '^Loopback') | list).0.ipv4.split('/')[0] }}"
+              network: '{{ ospf_network_data }}'
+        state: overridden
+
+    - name: Prepare logging hosts list
+      ansible.builtin.set_fact:
+        logging_hosts_list: "{{ (logging_hosts_list | default([])) + [{'hostname': item}] }}"
+      loop: "{{ logging_hosts }}"
+      loop_control:
+        label: "{{ item }}"
+
+    # - name: Debug logging hosts Parameters
+    #   ansible.builtin.debug:
+    #     var: logging_hosts_list
+
+    - name: Configure logging hosts
+      cisco.ios.ios_logging_global:
+        config:
+          hosts: '{{ logging_hosts_list }}'
+        state: overridden

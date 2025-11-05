@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "external_libs/qyt_libs" 
-    ]
+    ],
+    "ansible.python.interpreterPath": "/home/tingle/myProject/qyt-aiops-session-17/.venv/bin/python"
 }
