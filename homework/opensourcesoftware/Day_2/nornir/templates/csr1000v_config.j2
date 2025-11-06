@@ -1,0 +1,40 @@
+hostname {{ hostname }}
+{% if name_servers %}
+ip name-server {{ name_servers | join(' ') }}
+{% endif %}
+{% if domain_name%}
+ip domain name {{ domain_name }}
+{% endif %}
+{% for account in accounts %}
+{% if account.get('privilege') %}
+username {{ account.username }} privilege {{ account.privilege }} secret {{ account.secret }}
+{% else %}
+username {{ account.username }} secret {{ account.secret }}
+{% endif%}
+{% endfor %}
+{% for interface in interfaces %}
+interface {{ interface.name }}
+  ip address {{ interface.ip_address }} {{ interface.mask }}
+{% if interface.shutdown %}
+  shutdown
+{% else %}
+  no shutdown
+{% endif %}
+{% endfor %}
+{% if ospf %}
+router ospf 1
+  router-id {{ ospf.router_id }}
+{% for network in ospf.networks %}
+  network {{ network.net }} {{ network.wildcard }} area {{ network.area }}
+{% endfor %}
+{%  endif %}
+{% if logging %}
+{% for target in logging.targets %}
+logging {{ target.logging_type }} {{ target.level }}
+{% endfor %}
+{% for host in logging.hosts %}
+logging host {{ host }}
+{%  endfor %}
+{% endif %}
+end
+write memory

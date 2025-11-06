@@ -5,7 +5,7 @@
 ```bash
 terminal length 0
 config term
-username admin privilege 15 password 0 Cisc0123
+username admin privilege 15 secret Cisc0123
 interface GigabitEthernet4
  ip address 172.17.9.215 255.255.255.0
  no shutdown
@@ -20,7 +20,7 @@ line con 0
 
 terminal length 0
 config term
-username admin privilege 15 password 0 Cisc0123
+username admin privilege 15 secret Cisc0123
 interface GigabitEthernet4
  ip address 172.17.9.216 255.255.255.0
  no shutdown

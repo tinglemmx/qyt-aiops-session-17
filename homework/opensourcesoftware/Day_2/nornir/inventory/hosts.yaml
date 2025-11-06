@@ -1,0 +1,56 @@
+---
+CSR1:
+    hostname: 172.17.9.215
+    groups:
+        - sh
+    data:
+        interfaces:
+          - name: Loopback0
+            ip_address: 1.1.1.1
+            mask: 255.255.255.0
+            shutdown: false
+          - name: GigabitEthernet2
+            ip_address: 61.128.1.254
+            mask: 255.255.255.0
+          - name: GigabitEthernet4
+            ip_address: 172.17.9.215
+            mask: 255.255.255.0
+            shutdown: false
+        ospf:
+            router_id: 1.1.1.1
+            networks:
+              - net: 1.1.1.0
+                wildcard: 0.0.0.255
+                area: 0
+              - net: 61.128.1.0
+                wildcard: 0.0.0.255
+                area: 0
+
+
+CSR2:
+    hostname: 172.17.9.216
+    groups:
+        - sh
+    data:
+        interfaces:
+          - name: Loopback0
+            ip_address: 2.2.2.2
+            mask: 255.255.255.0
+            shutdown: false
+          - name: GigabitEthernet2
+            ip_address: 61.128.1.1
+            mask: 255.255.255.0
+            shutdown: false
+          - name: GigabitEthernet4
+            ip_address: 172.17.9.216
+            mask: 255.255.255.0
+            shutdown: false
+        ospf:
+            router_id: 2.2.2.2
+            networks:
+              - net: 2.2.2.0
+                wildcard: 0.0.0.255
+                area: 0
+              - net: 61.128.1.0
+                wildcard: 0.0.0.255
+                area: 0

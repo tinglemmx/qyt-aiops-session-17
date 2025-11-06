@@ -2138,6 +2138,57 @@ wheels = [
 ]
 
 [[package]]
+name = "nornir"
+version = "3.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ruamel-yaml" },
+    { name = "setuptools" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1a/e9/deda49010c698dc97f66fa93828686546c08127866b6c00a94078d4ef547/nornir-3.5.0.tar.gz", hash = "sha256:f0d212999a37bc5962534738c47099b3e11a45d8f7dc8bc855530f7fb73d2f64", size = 28730, upload-time = "2025-01-08T18:08:10.572Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5b/5b/2555603edbd02226c037822234830f6de837da53e1c0cd6018fc944c1d50/nornir-3.5.0-py3-none-any.whl", hash = "sha256:7e273d7b2aa519fa84b4fbbeb74ac5df3595d80105009049f0157c72a345b0b2", size = 30592, upload-time = "2025-01-08T18:08:04.668Z" },
+]
+
+[[package]]
+name = "nornir-jinja2"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "jinja2" },
+    { name = "nornir" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/55/ad/4424e634e0c44b7d5ce3d3f383327cd571b936e7ec1f81631f99cf2db5d5/nornir_jinja2-0.2.0.tar.gz", hash = "sha256:9ee5e725fe5543dcba4ec8b976804e9e88ecd356ea3b62bad97578cea0de1f75", size = 5996, upload-time = "2021-06-20T07:39:55.475Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d2/ee/c231767b75567cac8c7cfdd02baef46afae917e5593ccc63418193b17188/nornir_jinja2-0.2.0-py3-none-any.whl", hash = "sha256:0c446bec7a8492923d4eb9ca00fb327603b41bc35d5f0112843c048737b506b1", size = 7238, upload-time = "2021-06-20T07:39:53.8Z" },
+]
+
+[[package]]
+name = "nornir-netmiko"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "netmiko" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/94/00/ddd0b87d3493f7c853798d86f3b37fbb7decc4b5b30bd473e0f4565bc96d/nornir_netmiko-1.0.1.tar.gz", hash = "sha256:498546df001e0e499f10c5646d1356e361ccbb165b1335b89cfe8f19765e24d7", size = 7838, upload-time = "2023-12-07T18:18:34.364Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/16/63764c64087f14b2cd66f205da8570dfc13887ec43aa668de0c55a3ff92b/nornir_netmiko-1.0.1-py3-none-any.whl", hash = "sha256:eaee2944ad386b40c0719e8ac393ac63d531f44fb9a07d660bae7de430f12834", size = 11518, upload-time = "2023-12-07T18:18:33.369Z" },
+]
+
+[[package]]
+name = "nornir-utils"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama" },
+    { name = "nornir" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/46/fa/4e96cf440083973ea32bd95779fbed33e7d84015f898e4aef22f6a3bcb1b/nornir_utils-0.2.0.tar.gz", hash = "sha256:4de6aaa35e5c1a98e1c84db84a008b0b1e974dc65d88484f2dcea3e30c95fbc2", size = 10361, upload-time = "2022-04-09T09:32:46.274Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/14/89c3097801544249052c6a89ad5a9a65035ccddb3aae1948854545ea8f2e/nornir_utils-0.2.0-py3-none-any.whl", hash = "sha256:b4c430793a74f03affd5ff2d90abc8c67a28c7ff325f48e3a01a9a44ec71b844", size = 15157, upload-time = "2022-04-09T09:32:44.717Z" },
+]
+
+[[package]]
 name = "ntc-templates"
 version = "8.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3494,6 +3545,10 @@ dependencies = [
     { name = "matplotlib" },
     { name = "ncclient" },
     { name = "netmiko" },
+    { name = "nornir" },
+    { name = "nornir-jinja2" },
+    { name = "nornir-netmiko" },
+    { name = "nornir-utils" },
     { name = "pandas" },
     { name = "paramiko" },
     { name = "psutil" },
@@ -3536,6 +3591,10 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.6" },
     { name = "ncclient", specifier = ">=0.7.0" },
     { name = "netmiko", specifier = ">=4.6.0" },
+    { name = "nornir", specifier = ">=3.5.0" },
+    { name = "nornir-jinja2", specifier = ">=0.2.0" },
+    { name = "nornir-netmiko", specifier = ">=1.0.1" },
+    { name = "nornir-utils", specifier = ">=0.2.0" },
     { name = "pandas", specifier = ">=2.3.2" },
     { name = "paramiko", specifier = ">=4.0.0" },
     { name = "psutil", specifier = ">=7.1.0" },
