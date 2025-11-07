@@ -1,0 +1,98 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "my_eva",
+      "folder": "my_alarm",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "df3ea7a595q0wb",
+          "title": "ar for C9Kv 5秒 CPU利用率 from GNMI ",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": { "from": 300, "to": 0 },
+              "datasourceUid": "bf3d4i3ou8yrke",
+              "model": {
+                "datasource": { "type": "influxdb", "uid": "bf3d4i3ou8yrke" },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "query": "from(bucket: \"network_monitor\")\r\n\t|\u003e range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |\u003e filter(fn: (r) =\u003e r[\"_measurement\"] == \"Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization\")\r\n  |\u003e filter(fn: (r) =\u003e r[\"_field\"] == \"five_seconds\")\r\n  |\u003e filter(fn: (r) =\u003e r[\"host\"] == \"telegraf-c9kv\")\r\n  |\u003e filter(fn: (r) =\u003e r[\"path\"] == \"Cisco-IOS-XE-process-cpu-oper:cpu-usage/cpu-utilization\")\r\n  |\u003e filter(fn: (r) =\u003e r[\"source\"] == \"C9Kv\")\r\n  |\u003e filter(fn: (r) =\u003e r[\"subscription\"] == \"666\")\r\n  |\u003e keep(columns: [\"_time\", \"_value\", \"_field\"])",
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": { "from": 300, "to": 0 },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": { "params": [0, 0], "type": "gt" },
+                    "operator": { "type": "and" },
+                    "query": { "params": [] },
+                    "reducer": { "params": [], "type": "avg" },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "name": "Expression",
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "reducer": "max",
+                "refId": "B",
+                "settings": { "mode": "" },
+                "type": "reduce"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": { "from": 300, "to": 0 },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": { "params": [5, 0], "type": "gt" },
+                    "operator": { "type": "and" },
+                    "query": { "params": [] },
+                    "reducer": { "params": [], "type": "avg" },
+                    "type": "query",
+                    "unloadEvaluator": { "params": [5, 0], "type": "lt" }
+                  }
+                ],
+                "datasource": {
+                  "name": "Expression",
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "B",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "dasboardUid": "df3df8esfe51ca",
+          "panelId": 3,
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "__dashboardUid__": "df3df8esfe51ca",
+            "__panelId__": "3"
+          },
+          "labels": { "dingding": "true", "email": "true" },
+          "isPaused": false
+        }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@ dependencies = [
     "genie>=25.9",
     "gunicorn>=23.0.0",
     "influxdb>=5.3.2",
+    "influxdb-client>=1.49.0",
     "jsondiff>=2.2.1",
     "kamene>=0.32",
     "matplotlib>=3.10.6",

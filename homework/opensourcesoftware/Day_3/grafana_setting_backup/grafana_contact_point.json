@@ -1,0 +1,36 @@
+{
+  "apiVersion": 1,
+  "contactPoints": [
+    {
+      "orgId": 1,
+      "name": "grafana-default-email",
+      "receivers": [
+        {
+          "uid": "aaaaaaaaaaaaaaaaaaa",
+          "type": "email",
+          "settings": {
+            "addresses": "aaaaaaaaaaaaaa@hotmail.com",
+            "singleEmail": false
+          },
+          "disableResolveMessage": false
+        }
+      ]
+    },
+    {
+      "orgId": 1,
+      "name": "告警信息toDD",
+      "receivers": [
+        {
+          "uid": "ff3d41ujviznkf",
+          "type": "dingding",
+          "settings": {
+            "msgType": "actionCard",
+            "title": "告警信息",
+            "url": "https://oapi.dingtalk.com/robot/send?access_token=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "disableResolveMessage": false
+        }
+      ]
+    }
+  ]
+}
