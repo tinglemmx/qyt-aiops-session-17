@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: syslog
+  protocol.udp:
+    host: "0.0.0.0:514"
+  fields:
+    log_source: vyos
+  fields_under_root: true
+
+output.logstash:
+  hosts: ["logstash:5044"]
