@@ -19,7 +19,7 @@
         ],
         "console": "integratedTerminal",
         "justMyCode": false,
-        "cwd": "${workspaceFolder}/homework/Django/Day_1/mysite"
+        "cwd": "${workspaceFolder}/homework/Django/mysite"
         },
         {
             "name": "Python Debugger: Django",
@@ -31,7 +31,7 @@
             "django": true,
             "autoStartBrowser": false,
             "autoReload": {"enable": true},
-            "program": "${workspaceFolder}/homework/Django/Day_1/mysite/manage.py"
+            "program": "${workspaceFolder}/homework/Django/mysite/manage.py"
         }
     ]
 }
