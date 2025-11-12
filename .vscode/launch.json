@@ -15,7 +15,8 @@
             "--worker-class", "gthread",
             "--workers", "3",
             "--log-level", "debug",
-            "--access-logfile", "-"
+            "--access-logfile","-",
+            "--reload"
         ],
         "console": "integratedTerminal",
         "justMyCode": false,
