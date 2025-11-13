@@ -936,6 +936,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-extensions"
+version = "4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/b3/ed0f54ed706ec0b54fd251cc0364a249c6cd6c6ec97f04dc34be5e929eac/django_extensions-4.1.tar.gz", hash = "sha256:7b70a4d28e9b840f44694e3f7feb54f55d495f8b3fa6c5c0e5e12bcb2aa3cdeb", size = 283078, upload-time = "2025-04-11T01:15:39.617Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/64/96/d967ca440d6a8e3861120f51985d8e5aec79b9a8bdda16041206adfe7adc/django_extensions-4.1-py3-none-any.whl", hash = "sha256:0699a7af28f2523bf8db309a80278519362cd4b6e1fd0a8cd4bf063e1e023336", size = 232980, upload-time = "2025-04-11T01:15:37.701Z" },
+]
+
+[[package]]
 name = "docutils"
 version = "0.19"
 source = { registry = "https://pypi.org/simple" }
@@ -2709,6 +2721,18 @@ wheels = [
 ]
 
 [[package]]
+name = "puresnmp"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "x690" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4e/1a/c0d94ab9c7577d61c3597096dd446e789c9c98cf39d222298f4404429041/puresnmp-2.0.1.tar.gz", hash = "sha256:08a147249a6ff92d3f463b77e21b9221ca7a836ff7401e0b8dfe47135ed4cf56", size = 64103, upload-time = "2024-07-25T16:00:11.319Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/62/38184153bb6bc802c51adda22bcc3c06216650ca7c690b0135d717d9e86c/puresnmp-2.0.1-py3-none-any.whl", hash = "sha256:9d6413531d33225900883df8ac3131ddac34f13eae6ac6a6ffeee7ae81d309b1", size = 62134, upload-time = "2024-07-25T16:00:09.156Z" },
+]
+
+[[package]]
 name = "pyasn1"
 version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3203,6 +3227,12 @@ wheels = [
 ]
 
 [[package]]
+name = "pygraphviz"
+version = "1.14"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/ca/823d5c74a73d6b8b08e1f5aea12468ef334f0732c65cbb18df2a7f285c87/pygraphviz-1.14.tar.gz", hash = "sha256:c10df02377f4e39b00ae17c862f4ee7e5767317f1c6b2dfd04cea6acc7fc2bea", size = 106003, upload-time = "2024-09-29T18:31:12.471Z" }
+
+[[package]]
 name = "pyinstaller"
 version = "6.15.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3572,6 +3602,7 @@ dependencies = [
     { name = "bs4" },
     { name = "deepdiff" },
     { name = "django" },
+    { name = "django-extensions" },
     { name = "elasticsearch" },
     { name = "fastapi" },
     { name = "flask" },
@@ -3594,11 +3625,14 @@ dependencies = [
     { name = "paramiko" },
     { name = "psutil" },
     { name = "psycopg2-binary" },
+    { name = "puresnmp" },
     { name = "pyats" },
+    { name = "pygraphviz" },
     { name = "pyinstaller" },
     { name = "pynetbox" },
     { name = "pyshark" },
     { name = "pysmi" },
+    { name = "pysnmp" },
     { name = "pysnmp-mibs" },
     { name = "pytz" },
     { name = "pyvmomi" },
@@ -3621,6 +3655,7 @@ requires-dist = [
     { name = "bs4", specifier = ">=0.0.2" },
     { name = "deepdiff", specifier = ">=8.6.1" },
     { name = "django", specifier = ">=5.2.8" },
+    { name = "django-extensions", specifier = ">=4.1" },
     { name = "elasticsearch", specifier = "==8.14.0" },
     { name = "fastapi", specifier = ">=0.119.0" },
     { name = "flask", specifier = ">=3.1.2" },
@@ -3643,11 +3678,14 @@ requires-dist = [
     { name = "paramiko", specifier = ">=4.0.0" },
     { name = "psutil", specifier = ">=7.1.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
+    { name = "puresnmp", specifier = ">=2.0.1" },
     { name = "pyats", specifier = ">=25.9" },
+    { name = "pygraphviz", specifier = ">=1.14" },
     { name = "pyinstaller", specifier = ">=6.15.0" },
     { name = "pynetbox", specifier = ">=7.5.0" },
     { name = "pyshark", specifier = ">=0.6" },
     { name = "pysmi", specifier = ">=1.6.2" },
+    { name = "pysnmp", specifier = ">=6.1.4" },
     { name = "pysnmp-mibs", specifier = ">=0.1.6" },
     { name = "pytz", specifier = ">=2025.2" },
     { name = "pyvmomi", specifier = ">=9.0.0.0" },
@@ -4088,6 +4126,15 @@ wheels = [
 ]
 
 [[package]]
+name = "t61codec"
+version = "1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4d/3d/58386307e57294005c8fe2e7b29d97f9094efcb122ab1ff4a368816b45fa/t61codec-1.0.1.tar.gz", hash = "sha256:4d854f40017ef39e699291a57a9891c74630facb370b94238284eb9a475ae23f", size = 5713, upload-time = "2019-12-08T17:04:12.906Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/01/de/47bfc18604861278a97a8381262da4b6a9b98b9f645695ebaf3f22de2558/t61codec-1.0.1-py2.py3-none-any.whl", hash = "sha256:4dae780d65086a10ff822b14ecebb762defe478645a248b74980ced87c85f723", size = 6006, upload-time = "2019-12-08T17:04:07.574Z" },
+]
+
+[[package]]
 name = "termcolor"
 version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4344,6 +4391,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c9/4a/44d3c295350d776427904d73c189e10aeae66d7f555bb2feee16d1e4ba5a/wsproto-1.2.0.tar.gz", hash = "sha256:ad565f26ecb92588a3e43bc3d96164de84cd9902482b130d0ddbaa9664a85065", size = 53425, upload-time = "2022-08-23T19:58:21.447Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/78/58/e860788190eba3bcce367f74d29c4675466ce8dddfba85f7827588416f01/wsproto-1.2.0-py3-none-any.whl", hash = "sha256:b9acddd652b585d75b20477888c56642fdade28bdfd3579aa24a4d2c037dd736", size = 24226, upload-time = "2022-08-23T19:58:19.96Z" },
+]
+
+[[package]]
+name = "x690"
+version = "1.0.0.post1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "t61codec" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/78/5c/7fee7f6251575259453839f100301a0eaae6260b73762aa55de84573eee2/x690-1.0.0.post1.tar.gz", hash = "sha256:3a2a8a4e479079188aa6e847814981286b8f1c19569898fa3fe573ee0ce05349", size = 27995, upload-time = "2022-09-30T05:16:15.607Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/25/83/5da9e721caaba8654140bc991ac34e86d6bf3ad2db99ec5c77d3f88b015f/x690-1.0.0.post1-py3-none-any.whl", hash = "sha256:de754c27c9a46e6ede08036a804478ecd79591ecbe92df6f97b34adee55e9d64", size = 29376, upload-time = "2022-09-30T05:16:14.184Z" },
 ]
 
 [[package]]

@@ -9,3 +9,5 @@ __pycache__/
 .venv/
 
 .session_cookies.json
+
+homework/Django/pgdata

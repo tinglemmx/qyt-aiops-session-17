@@ -1,6 +1,6 @@
 import asyncio
 
-from pysnmp.hlapi.v3arch.asyncio import *
+from pysnmp.hlapi import getCmd, nextCmd, bulkCmd, SnmpEngine, CommunityData, ContextData, UdpTransportTarget, ObjectType, ObjectIdentity
 from pysnmp.smi.view import MibViewController
 from pysnmp.smi import builder, view
 
@@ -12,13 +12,13 @@ class QytangSNMP:
         self.snmp_port = snmp_port
         self.version = mapping_version(version)
 
-    async def getCMD(self, oid_dict):
+    async def get_cmd(self, oid_dict):
         snmpEngine = SnmpEngine()
 
-        iterator = get_cmd(
+        iterator = getCmd(
             snmpEngine,
             CommunityData(self.community, mpModel=self.version),
-            await UdpTransportTarget.create((self.ip, self.snmp_port)),
+            await UdpTransportTarget((self.ip, self.snmp_port)),
             ContextData(),
             # ObjectType(ObjectIdentity("SNMPv2-MIB", "sysDescr", 0)), # SNMPv2-MIB::sysDescr.0 → 1.3.6.1.2.1.1.1.0
             ObjectType(ObjectIdentity(oid_dict))
@@ -29,7 +29,7 @@ class QytangSNMP:
 
     async def getNext(self, oid_dict_list, lookupMib=False):
         snmpEngine = SnmpEngine()
-        errorIndication, errorStatus, errorIndex, varBinds = await next_cmd(
+        errorIndication, errorStatus, errorIndex, varBinds = await nextCmd(
             snmpEngine,
             CommunityData(self.community, mpModel=self.version),
             await UdpTransportTarget.create((self.ip, self.snmp_port)),
@@ -41,7 +41,7 @@ class QytangSNMP:
 
     async def bulkCmd(self, oid_dict_list, maxRepetitions=10, lookupMib=False):
         snmpEngine = SnmpEngine()
-        errorIndication, errorStatus, errorIndex, varBinds = await bulk_cmd(
+        errorIndication, errorStatus, errorIndex, varBinds = await bulkCmd(
             snmpEngine,
             CommunityData(self.community, mpModel=self.version),
             await UdpTransportTarget.create((self.ip, self.snmp_port)),
