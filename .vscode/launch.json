@@ -26,13 +26,13 @@
             "name": "Python Debugger: Django",
             "type": "debugpy",
             "request": "launch",
-            "args": [
-                "runserver"
-            ],
+            "args": ["runserver", "0.0.0.0:8000"],
             "django": true,
             "autoStartBrowser": false,
             "autoReload": {"enable": true},
-            "program": "${workspaceFolder}/homework/Django/mysite/manage.py"
+            "program": "${workspaceFolder}/homework/Django/mysite/manage.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/homework/Django/mysite"
         }
     ]
 }

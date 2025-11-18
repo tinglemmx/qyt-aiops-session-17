@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}
+  {% if mode == "add" %}添加设备{% else %}编辑设备：{{ device.hostname }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>
+        {% if mode == "add" %}
+        添加设备
+        {% else %}
+        编辑设备：{{ device.hostname }}
+        {% endif %}
+    </h2>
+<form method="POST" id="deviceForm">
+{% csrf_token %}
+    <div class="container">
+
+        <!-- Hostname -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.hostname.id_for_label }}" class="form-label">
+                    Hostname <span class="text-danger">*</span>
+                </label>
+                {{ form.hostname|add_class:"form-control"|attr:"required:true" }}
+                {% if form.hostname.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.hostname.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- IP 地址 -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.ip_address.id_for_label }}" class="form-label">
+                    IP 地址 <span class="text-danger">*</span>
+                </label>
+                {{ form.ip_address|add_class:"form-control"|attr:"required:true" }}
+                {% if form.ip_address.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.ip_address.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 设备类型 -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.dev_type.id_for_label }}" class="form-label">设备类型</label>
+                {{ form.dev_type|add_class:"form-select" }}
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                {{ form.description|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <!-- SSH 用户 -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.ssh_username.id_for_label }}" class="form-label">SSH 用户</label>
+                {{ form.ssh_username|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <!-- SSH 密码 -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.ssh_password.id_for_label }}" class="form-label">SSH 密码</label>
+                <div class="input-group">
+                    {{ form.ssh_password|add_class:"form-control"|attr:"type:password" }}
+                    <span class="input-group-text" onclick="togglePassword('id_ssh_password', this)" style="cursor:pointer;">
+                        <i class="bi bi-eye-slash"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enable 密码 -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.enable_password.id_for_label }}" class="form-label">Enable 密码</label>
+                <div class="input-group">
+                    {{ form.enable_password|add_class:"form-control"|attr:"type:password" }}
+                    <span class="input-group-text" onclick="togglePassword('id_enable_password', this)" style="cursor:pointer;">
+                        <i class="bi bi-eye-slash"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SNMP RO -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.snmp_ro_community.id_for_label }}" class="form-label">SNMP RO</label>
+                {{ form.snmp_ro_community|add_class:"form-control" }}
+            </div>
+        </div>
+
+        <!-- SNMP RW -->
+        <div class="row mb-3">
+            <div class="col-6">
+                <label for="{{ form.snmp_rw_community.id_for_label }}" class="form-label">SNMP RW</label>
+                {{ form.snmp_rw_community|add_class:"form-control" }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">提交</button>
+        <a href="{% url 'device_list' %}" class="btn btn-secondary">返回列表</a>
+    </div>
+</form>
+<script>
+function togglePassword(inputId, iconSpan) {
+    const input = document.getElementById(inputId);
+    if (!input) {
+        console.error("Input not found:", inputId);
+        return;
+    }
+
+    const eye = iconSpan.querySelector("i");
+
+    const hidden = input.type === "password";
+    input.type = hidden ? "text" : "password";
+
+    // 切换图标
+    if (hidden) {
+        eye.classList.remove("bi bi-eye");
+        eye.classList.add("bi bi-eye-slash");
+    } else {
+        eye.classList.remove("bi bi-eye-slash");
+        eye.classList.add("bi bi-eye");
+    }
+}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("deviceForm");  // <-- 修正这里！
+
+    const showConfirm = {% if show_duplicate_confirm %} true {% else %} false {% endif %};
+
+    if (showConfirm) {
+        if (confirm("IP 地址 {{ duplicate_ip }} 已存在，是否继续添加？")) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "confirm_duplicate";
+            input.value = "1";
+            form.appendChild(input);
+
+            form.submit();
+        }
+    }
+});
+</script>
+
+{% endblock %}
