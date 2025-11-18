@@ -82,5 +82,5 @@ def edit_device(request, device_id):
 def delete_device(request, pk):
     device = get_object_or_404(DeviceDB, pk=pk)
     device.delete()
-    messages.success(request, f"设备 {device.hostname} 删除成功！")
+    messages.success(request, f"设备 {device.hostname.upper()} 删除成功！")
     return redirect("device_list")

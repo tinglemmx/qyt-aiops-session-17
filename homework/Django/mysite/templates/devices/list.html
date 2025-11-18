@@ -69,7 +69,7 @@
                 <td>
                     <a href="{% url 'edit_device' device.id %}" class="btn btn-sm btn-warning">编辑</a>
                     <form action="{% url 'delete_device' device.id %}" method="post" style="display:inline-block;"
-                        onsubmit="return confirm('确认删除 {{ device.hostname }}？');">
+                        onsubmit="return confirm('确认删除 {{ device.hostname|upper }}？');">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-danger">删除</button>
                     </form>
