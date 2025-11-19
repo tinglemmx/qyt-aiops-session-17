@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404,redirect
-from .models import DeviceDB, DeviceMetric
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import DeviceDB, DeviceMetric,MetricType,DeviceMetric
 from scripts.snmp_collector import collect_snmp_for_device
 from .forms import DeviceForm
 from django.db.models import Q
@@ -14,9 +14,11 @@ def collect_once(request):
         device_id = request.POST.get('device_id')
         device = get_object_or_404(DeviceDB, id=device_id)
         collect_snmp_for_device(device)
-        metrics = DeviceMetric.objects.filter(device=device).order_by('-timestamp')
+        metrics = DeviceMetric.objects.filter(
+            device=device).order_by('-timestamp')
 
     return render(request, 'devices/collect.html', {'devices': devices, 'metrics': metrics})
+
 
 def add_device(request):
     if request.method == "POST":
@@ -36,7 +38,8 @@ def add_device(request):
             return redirect("device_list")  # 保存后跳回列表页
     else:
         form = DeviceForm()
-    return render(request, "devices/device_form.html",{"form": form, "mode":"add"})
+    return render(request, "devices/device_form.html", {"form": form, "mode": "add"})
+
 
 def device_list(request):
     q = request.GET.get("q", "").strip()
@@ -77,7 +80,8 @@ def edit_device(request, device_id):
     else:
         form = DeviceForm(instance=device)
 
-    return render(request, "devices/device_form.html", {"form": form, "device": device,"mode":"edit"})
+    return render(request, "devices/device_form.html", {"form": form, "device": device, "mode": "edit"})
+
 
 def delete_device(request, pk):
     device = get_object_or_404(DeviceDB, pk=pk)

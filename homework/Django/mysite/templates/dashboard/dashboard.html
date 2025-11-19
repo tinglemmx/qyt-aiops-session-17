@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{% load static %}
+<script src="{% static 'js/echarts.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+<div class="container mt-4">
+    <h2 class="mb-4">设备性能 Dashboard 📈</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    CPU 利用率
+                </div>
+                <div class="card-body">
+                    <div id="cpu_chart" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    内存利用率
+                </div>
+                <div class="card-body">
+                    <div id="mem_chart" style="height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let cpuChart = echarts.init(document.getElementById('cpu_chart'));
+let memChart = echarts.init(document.getElementById('mem_chart'));
+
+// 定义只需要展示的指标，并简单区分是 CPU 还是 MEM
+const metricConfig = {
+    "ciscoCpuUsage(5s)": 'cpu',
+    "vyosLoadAverage(1m)": 'cpu',
+    "ciscoMemoryPoolFree": 'memory_B', // 标记为 Byte
+    "vyosMemAvail": 'memory_KB',      // 标记为 KB
+};
+
+// 辅助函数：将时间戳格式化为 HH:mm:ss
+function formatTime(timestamp) {
+    if (!timestamp) return '';
+    const parts = timestamp.split(' ');
+    if (parts.length > 1) {
+        return parts[1]; // 返回时间部分 (如 "02:50:30")
+    }
+    return timestamp;
+}
+
+function fetchData() {
+    fetch("{% url 'dashboard_data' %}")
+        .then(res => res.json())
+        .then(data => {
+
+            let cpuSeries = [];
+            let memSeries = [];
+            let cpuLegendData = [];
+            let memLegendData = [];
+            let xAxisTimes = []; 
+            let maxPoints = 20;
+
+            // ---------------- 1. 提取并确定共享的 X 轴时间序列 ----------------
+            const firstCpuEntry = (data.cpu || []).find(entry => entry.data && entry.data.length > 0);
+            if (firstCpuEntry) {
+                // 优化点 1: 格式化时间戳
+                xAxisTimes = firstCpuEntry.data.map(d => formatTime(d.timestamp));
+                xAxisTimes = xAxisTimes.slice(-maxPoints); 
+            }
+
+            // ---------------- 2. 处理 CPU 数据 (无变化) ----------------
+            (data.cpu || []).forEach(entry => {
+                const device = entry.device;
+                const metric = entry.metric;
+                const rawData = entry.data;
+
+                if (metricConfig[metric] === 'cpu' && rawData && rawData.length > 0) {
+                    const seriesName = `${device} (${metric.split('(')[0]})`;
+                    
+                    let cpuVal = rawData.map(d => Number(d.value));
+                    cpuVal = cpuVal.slice(-maxPoints);
+
+                    cpuSeries.push({
+                        name: seriesName,
+                        type: 'line',
+                        smooth: true,
+                        data: cpuVal,
+                        showSymbol: false 
+                    });
+                    cpuLegendData.push(seriesName);
+                }
+            });
+
+            // ---------------- 3. 处理 MEMORY 数据 (核心转换) ----------------
+            (data.memory || []).forEach(entry => {
+                const device = entry.device;
+                const metric = entry.metric;
+                const rawData = entry.data;
+                const unitType = metricConfig[metric];
+
+                if ((unitType === 'memory_B' || unitType === 'memory_KB') && rawData && rawData.length > 0) {
+                    const seriesName = `${device} (${metric.split('(')[0]})`;
+                    
+                    let memVal = rawData.map(d => {
+                        let value = Number(d.value);
+                        // 核心逻辑：将所有值转换为 Byte
+                        if (unitType === 'memory_KB') {
+                            return value * 1024; // KB -> B
+                        }
+                        return value; // B -> B
+                    });
+                    
+                    memVal = memVal.slice(-maxPoints);
+
+                    memSeries.push({
+                        name: seriesName,
+                        type: 'line',
+                        smooth: true,
+                        data: memVal,
+                        showSymbol: false
+                    });
+                    memLegendData.push(seriesName);
+                }
+            });
+
+
+            // ---------------- 4. 配置 CPU 图表 (无变化) ----------------
+            cpuChart.setOption({
+                title: { text: 'CPU 利用率 / 负载', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: cpuLegendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: { 
+                    type: 'category', 
+                    data: xAxisTimes, 
+                    name: '时间' 
+                },
+                yAxis: { 
+                    type: 'value',
+                    name: 'CPU / 负载值 (%)',
+                    min: 0,
+                    axisLabel: { formatter: '{value} %' } 
+                },
+                series: cpuSeries
+            }, true); 
+
+
+            // ---------------- 5. 配置 内存 图表 (精确换算 Y 轴) ----------------
+            memChart.setOption({
+                title: { text: '内存可用量 (MB)', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                legend: { data: memLegendData, bottom: 0, type: 'scroll' },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: { 
+                    type: 'category', 
+                    data: xAxisTimes, 
+                    name: '时间' 
+                },
+                yAxis: { 
+                    type: 'value',
+                    name: '内存可用量 (MB)',
+                    min: 0,
+                    // *** 优化点 3: 内存单位转换为 MB (精确换算) ***
+                    axisLabel: { 
+                        formatter: function(value) {
+                            // 所有的 Series 数据现在都是 Byte (B)
+                            const divisor = 1024 * 1024; // B -> MB
+                            
+                            if (value >= divisor) {
+                                return (value / divisor).toFixed(2) + ' MB';
+                            }
+                            // 如果数值小于 1MB，转换为 KB 显示
+                            if (value >= 1024) {
+                                return (value / 1024).toFixed(2) + ' KB';
+                            }
+                            return value + ' B';
+                        }
+                    }
+                },
+                series: memSeries
+            }, true);
+        });
+}
+
+fetchData();
+setInterval(fetchData, 15000);
+
+// 确保在窗口大小改变时图表也自适应
+window.addEventListener('resize', function() {
+    cpuChart.resize();
+    memChart.resize();
+});
+</script>
+{% endblock %}

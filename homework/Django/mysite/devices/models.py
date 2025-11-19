@@ -79,13 +79,13 @@ class MetricMapping(models.Model):
     is_primary = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ("logical_name", "metric_type")
+        unique_together = ("logical_name", "metric_type","device_type")
         indexes = [
             models.Index(fields=["logical_name"]),
         ]
 
     def __str__(self):
-        return f"{self.logical_name} → {self.metric_type.protocol}:{self.metric_type.metric_path}"
+        return f"{self.logical_name}:{self.device_type} → {self.metric_type.protocol}:{self.metric_type.metric_path}"
 
 
 class DeviceMetric(models.Model):

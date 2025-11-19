@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "devices",
     'django_extensions',
     'widget_tweaks',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
