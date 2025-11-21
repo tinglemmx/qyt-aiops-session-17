@@ -4,56 +4,44 @@ from django.utils import timezone
 from datetime import timedelta
 from devices.models import DeviceMetric, MetricType,DeviceDB,MetricMapping
 import pytz
+from .services.metric_service import MetricService
 
 def dashboard(request):
     return render(request, "dashboard/dashboard.html")
 
-def get_metric_data(metric_logic_name_key_word, device_item, limit=20):
-    cn_tz = pytz.timezone("Asia/Shanghai")
-
-    metric_mappings = MetricMapping.objects.filter(
-        logical_name__icontains=metric_logic_name_key_word,
-        device_type_id=device_item.dev_type,
-        is_primary=True
-    )
-    if not len(metric_mappings) ==1 :
-        raise ValueError(f"找到多个或没有匹配的 MetricMapping for {metric_logic_name_key_word} on device {device_item.hostname}")
-    series = []
-    for mapping in metric_mappings:
-        data_qs = DeviceMetric.objects.filter(
-            device_id=device_item.id,
-            metric_type_id=mapping.metric_type.id
-        ).order_by('-timestamp')[:limit]
-        data = list(reversed(data_qs))  # 倒序保证时间顺序
-
-        series.append({
-            "device": device_item.hostname,
-            "metric": mapping.metric_type.name,
-            "data": [
-                {"timestamp": d.timestamp.astimezone(cn_tz).strftime("%Y-%m-%d %H:%M:%S"), "value": d.metrics.get("value", 0)}
-                for d in data if d.success
-            ]
-        })
-    return series
-    
-    
 def dashboard_data(request):
+    ms = MetricService(max_points=20)
+
     cpu_logic_kw = "cpuUsage"
     mem_logic_kw = "memoryPoolFree"
-
-    # 假设你有一个 DeviceDB 模型
+    mem_logic_used_kw = "memoryPoolUsed"
+    
     devices = DeviceDB.objects.all()
 
-    cpu_series = []
-    mem_series = []
+    cpu_all = []
+    mem_all = []
+    mem_avail = []
+    mem_used = []
 
     for dev in devices:
-        # 取最近 20 条 CPU 数据
+        cpu_all.append(ms.get_device_series(dev, cpu_logic_kw))
+        mem_all.append(ms.get_device_series(dev, mem_logic_kw))
+        mem_avail.append(ms.get_device_series(dev, mem_logic_kw))
+        mem_used.append(ms.get_device_series_memory_used(dev))
 
-        cpu_series.extend(get_metric_data(cpu_logic_kw, dev, limit=20))
-        mem_series.extend(get_metric_data(mem_logic_kw, dev, limit=20))
 
-    return JsonResponse({
-        "cpu": cpu_series,
-        "memory": mem_series,
-    })
+    # print(mem_used)
+    cpu_x, cpu_series = ms.merge_series(cpu_all)
+    mem_x, mem_series = ms.merge_series(mem_all)
+    mem_avail_x, mem_avail_series = ms.merge_series(mem_avail)
+    mem_used_x, mem_used_serise = ms.merge_series(mem_used)
+
+    return JsonResponse(ms.build_echarts_json(
+        cpu_data={"x": cpu_x, "series": cpu_series},
+        mem_data={"x": mem_x, "series": mem_series},
+        mem_avail_data={"x": mem_avail_x, "series": mem_avail_series},
+        mem_used_data={"x": mem_used_x, "series": mem_used_serise},
+    ))
+
+def ultimate_line(request):
+    return render(request, "dashboard/ultimate_line.html")

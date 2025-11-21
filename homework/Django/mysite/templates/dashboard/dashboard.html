@@ -1,207 +1,234 @@
 {% extends "base.html" %}
+
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+
 {% load static %}
+
 <script src="{% static 'js/echarts.min.js' %}"></script>
-<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
-<div class="container-fluid mt-4 px-5"> 
-    <h2 class="mb-4">设备性能 Dashboard 📈</h2>
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header">
-                    CPU 利用率
-                </div>
-                <div class="card-body">
-                    <div id="cpu_chart" style="height: 350px;"></div>
-                </div>
-            </div>
-        </div>
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header">
-                    内存可用量
-                </div>
-                <div class="card-body">
-                    <div id="mem_chart" style="height: 350px;"></div>
-                </div>
-            </div>
+<div class="container-fluid mt-4 px-5">
+  <h2 class="mb-4">设备性能 Dashboard 📈</h2>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header">CPU 利用率</div>
+        <div class="card-body">
+          <div id="cpu_chart" style="height: 350px"></div>
         </div>
+      </div>
     </div>
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header">内存可用量</div>
+        <div class="card-body">
+          <div id="mem_chart" style="height: 350px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  ```
+  <!-- 饼图容器，每台设备一个 -->
+  <div class="row g-4 mt-4" id="pie_charts_container"></div>
+  ```
 </div>
 
 <script>
-let cpuChart = echarts.init(document.getElementById('cpu_chart'));
-let memChart = echarts.init(document.getElementById('mem_chart'));
+  let cpuChart = echarts.init(document.getElementById("cpu_chart"));
+  let memChart = echarts.init(document.getElementById("mem_chart"));
+  const pieContainer = document.getElementById("pie_charts_container");
 
-// 定义只需要展示的指标，并简单区分其原始单位
-const metricConfig = {
-    "ciscoCpuUsage(5s)": 'cpu',
-    "vyosLoadAverage(1m)": 'cpu',
-    "ciscoMemoryPoolFree": 'memory_B', // Byte
-    "vyosMemAvail": 'memory_KB',      // Kilobyte
-};
+  const metricConfig = {
+    "ciscoCpuUsage(5s)": "cpu",
+    "vyosLoadAverage(1m)": "cpu",
+    ciscoMemoryPoolFree: "memory_B",
+    vyosMemAvail: "memory_KB",
+  };
 
-// 辅助函数：将时间戳格式化为 MM-DD HH:mm:ss
-function formatTime(timestamp) {
-    if (!timestamp) return '';
-    const parts = timestamp.split(' ');
+  // 格式化时间 MM-DD HH:mm:ss
+  function formatTime(ts) {
+    if (!ts) return "";
+    const parts = ts.split(" ");
     if (parts.length > 1) {
-        const datePart = parts[0].substring(5); // MM-DD
-        const timePart = parts[1];
-        return `${datePart} ${timePart}`; // 返回 MM-DD HH:mm:ss
+      const datePart = parts[0].substring(5); // MM-DD
+      return `${datePart} ${parts[1]}`;
     }
-    return timestamp;
-}
+    return ts;
+  }
 
-function fetchData() {
+  function fetchData() {
     fetch("{% url 'dashboard_data' %}")
-        .then(res => res.json())
-        .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
+        let cpuSeries = [];
+        let memSeries = [];
+        let cpuLegendData = [];
+        let memLegendData = [];
+        let xAxisTimes = [];
+        let maxPoints = 20;
+        let memoryPieData = [];
 
-            let cpuSeries = [];
-            let memSeries = [];
-            let cpuLegendData = [];
-            let memLegendData = [];
-            let xAxisTimes = []; 
-            let maxPoints = 20;
+        // ---------------- 1. 提取共享的 X 轴时间序列 ----------------
+        xAxisTimes = (data.cpu.x || []).slice(-maxPoints).map(formatTime);
+        console.log(xAxisTimes);
 
-            // ---------------- 1. 提取并确定共享的 X 轴时间序列 (去重) ----------------
-            const firstCpuEntry = (data.cpu || []).find(entry => entry.data && entry.data.length > 0);
-            
-            if (firstCpuEntry) {
-                let rawTimes = firstCpuEntry.data.map(d => formatTime(d.timestamp));
-                rawTimes = rawTimes.slice(-maxPoints); 
-                xAxisTimes = [...new Set(rawTimes)];
-            }
-            const finalMaxPoints = xAxisTimes.length;
+        const finalMaxPoints = xAxisTimes.length;
 
-
-            // ---------------- 2. 处理 CPU 数据 ----------------
-            (data.cpu || []).forEach(entry => {
-                const device = entry.device;
-                const metric = entry.metric;
-                const rawData = entry.data;
-
-                if (metricConfig[metric] === 'cpu' && rawData && rawData.length > 0) {
-                    const seriesName = `${device} (${metric.split('(')[0]})`;
-                    
-                    let cpuVal = rawData.map(d => Number(d.value));
-                    cpuVal = cpuVal.slice(-finalMaxPoints); 
-
-                    cpuSeries.push({
-                        name: seriesName,
-                        type: 'line',
-                        smooth: true,
-                        data: cpuVal,
-                        showSymbol: false 
-                    });
-                    cpuLegendData.push(seriesName);
-                }
-            });
-
-            // ---------------- 3. 处理 MEMORY 数据 (精确转换 B/KB -> B) ----------------
-            (data.memory || []).forEach(entry => {
-                const device = entry.device;
-                const metric = entry.metric;
-                const rawData = entry.data;
-                const unitType = metricConfig[metric];
-
-                if ((unitType === 'memory_B' || unitType === 'memory_KB') && rawData && rawData.length > 0) {
-                    const seriesName = `${device} (${metric.split('(')[0]})`;
-                    
-                    let memVal = rawData.map(d => {
-                        let value = Number(d.value);
-                        if (unitType === 'memory_KB') {
-                            return value * 1024; // KB -> B
-                        }
-                        return value; // B -> B
-                    });
-                    
-                    memVal = memVal.slice(-finalMaxPoints);
-
-                    memSeries.push({
-                        name: seriesName,
-                        type: 'line',
-                        smooth: true,
-                        data: memVal,
-                        showSymbol: false
-                    });
-                    memLegendData.push(seriesName);
-                }
-            });
-
-
-            // ---------------- 4. 配置 CPU 图表 ----------------
-            cpuChart.setOption({
-                title: { text: 'CPU 利用率 / 负载', left: 'center' },
-                tooltip: { trigger: 'axis' },
-                legend: { data: cpuLegendData, bottom: 0, type: 'scroll' },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { 
-                    type: 'category', 
-                    data: xAxisTimes, 
-                    name: '时间 (MM-DD HH:mm:ss)',
-                    axisLabel: {
-                        rotate: 30 
-                    }
-                },
-                yAxis: { 
-                    type: 'value',
-                    name: 'CPU / 负载值 (%)',
-                    min: 0,
-                    axisLabel: { formatter: '{value} %' } 
-                },
-                series: cpuSeries
-            }, true); 
-
-
-            // ---------------- 5. 配置 内存 图表 ----------------
-            memChart.setOption({
-                title: { text: '内存可用量 (MB)', left: 'center' },
-                tooltip: { trigger: 'axis' },
-                legend: { data: memLegendData, bottom: 0, type: 'scroll' },
-                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-                xAxis: { 
-                    type: 'category', 
-                    data: xAxisTimes, 
-                    name: '时间 (MM-DD HH:mm:ss)',
-                    axisLabel: {
-                        rotate: 30 
-                    }
-                },
-                yAxis: { 
-                    type: 'value',
-                    name: '内存可用量 (MB)',
-                    min: 0,
-                    axisLabel: { 
-                        formatter: function(value) {
-                            const divisor = 1024 * 1024; // B -> MB
-                            
-                            if (value >= divisor) {
-                                return (value / divisor).toFixed(2) + ' MB';
-                            }
-                            if (value >= 1024) {
-                                return (value / 1024).toFixed(2) + ' KB';
-                            }
-                            return value + ' B';
-                        }
-                    }
-                },
-                series: memSeries
-            }, true);
+        // ---------------- 2. CPU Series ----------------
+        (data.cpu.series || []).forEach((entry) => {
+          const values = entry.data.map((v) => (v !== null ? Number(v) : NaN));
+          cpuSeries.push({
+            name: entry.name,
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            data: values,
+          });
+          cpuLegendData.push(entry.name);
         });
-}
 
-fetchData();
-setInterval(fetchData, 10000);
+        // ---------------- 3. Memory Series ----------------
+        (data.memory.series || []).forEach((entry) => {
+          const values = entry.data.map((v) => (v !== null ? Number(v) : NaN));
+          memSeries.push({
+            name: entry.name,
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            data: values,
+          });
+          memLegendData.push(entry.name);
+        });
 
-window.addEventListener('resize', function() {
+        (data.memory_avail.series || []).forEach((freeEntry, idx) => {
+          const usedEntry = (data.memory_used.series || [])[idx];
+          if (!usedEntry) return;
+
+          const deviceName = freeEntry.name.split(" ")[0]; // 设备名
+          const freeVal = freeEntry.data.at(-1); // free 最后一个值
+          const usedVal = usedEntry.data.at(-1); // used 最后一个值
+
+          // 处理 null
+          const freeMB = freeVal === null ? 0 : freeVal;
+          const usedMB = usedVal === null ? 0 : usedVal;
+
+          memoryPieData.push({
+            name: deviceName,
+            value: usedMB, // 饼图通常显示 used
+            free: freeMB,
+            used: usedMB,
+          });
+        });
+        // ---------------- 4. 更新 CPU 图 ----------------
+        cpuChart.setOption(
+          {
+            title: { text: "CPU 利用率 / 负载", left: "center" },
+            tooltip: { trigger: "axis" },
+            legend: { data: cpuLegendData, bottom: 0, type: "scroll" },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "15%",
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              data: xAxisTimes,
+              axisLabel: { rotate: 30 },
+              name: "时间",
+            },
+            yAxis: {
+              type: "value",
+              min: 0,
+              name: "CPU (%)",
+              axisLabel: { formatter: "{value} %" },
+            },
+            series: cpuSeries,
+          },
+          true
+        );
+
+        // ---------------- 5. 更新 Memory 图 ----------------
+        memChart.setOption(
+          {
+            title: { text: "内存可用量 (MB)", left: "center" },
+            tooltip: { trigger: "axis" },
+            legend: { data: memLegendData, bottom: 0, type: "scroll" },
+            grid: {
+              left: "3%",
+              right: "4%",
+              bottom: "15%",
+              containLabel: true,
+            },
+            xAxis: {
+              type: "category",
+              data: xAxisTimes,
+              axisLabel: { rotate: 30 },
+              name: "时间",
+            },
+            yAxis: {
+              type: "value",
+              min: 0,
+              name: "内存 (MB)",
+              axisLabel: {
+                formatter: "{value}",
+              },
+            },
+            series: memSeries,
+          },
+          true
+        );
+
+        // ---------------- 6. 更新饼图 ----------------
+        pieContainer.innerHTML = "";
+        memoryPieData
+          .filter((d) => {
+            return d.used && d.free;
+          })
+          .forEach((d) => {
+            const div = document.createElement("div");
+            div.className = "col-md-4";
+            div.style.height = "400px";
+            pieContainer.appendChild(div);
+
+            const pieChart = echarts.init(div);
+            pieChart.setOption({
+              title: { text: d.name + " 内存占比", left: "center", top: 0 },
+              tooltip: { trigger: "item", formatter: "{b}: {c} MB ({d}%)" },
+              series: [
+                {
+                  name: "内存",
+                  type: "pie",
+                  radius: "50%",
+                  data: [
+                    { name: "已用", value: d.used },
+                    { name: "可用", value: d.free },
+                  ],
+                  label: {
+                    show: true,                 // 扇区上显示文本
+                    formatter: '{b}: {c} MB',
+                    position: 'outside'         // 或 'inside'
+                }
+                },
+              ],
+            });
+          });
+      })
+      .catch((err) => {
+        console.error("获取数据失败:", err);
+      });
+  }
+
+  fetchData();
+  setInterval(fetchData, 10000);
+  window.addEventListener("resize", () => {
     cpuChart.resize();
     memChart.resize();
-});
+  });
 </script>
+
 {% endblock %}
