@@ -3,5 +3,130 @@
 
 {% block content %}
 {% load static %}
-test
+
+
+<script type="text/javascript" src="{% static 'js/echarts.min.js' %}"></script>
+<div class="container mt-4">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+        实时 CPU 利用率
+    </div>
+    <div class="card-body">
+        <div id="cpuChart" style="width:100%; height:500px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cpuChart = echarts.init(document.getElementById('cpuChart'));
+let is_first_load = true;
+function renderCpuChart(data) {
+    let currentZoomInside = { start: 0, end: 100 };
+    let currentZoomSlider = { start: 0, end: 100 };
+
+    if (!is_first_load) {
+        const dz = cpuChart.getOption().dataZoom;
+        if (dz[0]) currentZoomInside = dz[0];
+        if (dz[1]) currentZoomSlider = dz[1];
+    }
+
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        toolbox: {
+            feature: {
+            dataZoom: {
+                yAxisIndex: 'none'
+            },
+            restore: {},
+            saveAsImage: {}
+            },
+            top: 0 
+        },
+        legend: {
+            type: 'scroll',
+            top: 50
+        },
+        grid: {
+            top: '130px',
+            left: '3%',
+            right: '4%',
+            bottom: '80px',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: data.times,
+            interval: 1000 * 60 ,
+            axisLabel: { 
+                formatter: function (value) {
+                const date = new Date(value);
+                return echarts.format.formatTime('MM-dd\nhh:mm:ss', date); // 换行显示       
+                },
+                showMinLabel: true,
+                showMaxLabel: true,
+            },
+        },
+        yAxis: {
+            type: 'value',
+            name: 'CPU (%)'
+        },
+        dataZoom: [
+            {
+                type: 'inside',
+                start: currentZoomInside.start,
+                end:  currentZoomInside.end
+            },
+            {   type: 'slider',  // 底部滑块
+                bottom: 15,      // 调整 slider 距底部的距离，数字越大离底部越远
+                showDetail: true, // 显示数据提示
+                start: currentZoomSlider.start,
+                end: currentZoomSlider.end,
+
+            }
+        ],
+        series: data.series
+        .filter(item => item.data.some(v => v !== null)) 
+        .map(item => ({
+            name: item.name,
+            type: 'line',
+            smooth: true,
+            showSymbol: false,
+            data: item.data.map(v => v !== null ? Number(v) : NaN),
+            connectNulls: false,
+            lineStyle: { width: 2 },
+            areaStyle: { opacity: 0.2 },
+            markPoint: {
+            data: [
+                { type: 'max', name: '最大值', label: { formatter: '{c}%'  } },
+                { type: 'min', name: '最小值', label: { formatter: '{c}%'  } }
+            ]
+    }
+        })
+        )
+    };
+
+    cpuChart.setOption(option);
+    is_first_load = false;
+}
+
+function fetchCpuData() {
+    fetch("{% url 'cpu_data_api' %}")  // 后端 url，例如 dashboard_cpu_data
+        .then(response => response.json())
+        .then(data => {
+            renderCpuChart(data);
+        })
+        .catch(err => {
+            console.error("获取 CPU 数据失败:", err);
+        });
+}
+
+fetchCpuData();
+setInterval(fetchCpuData, 10000); // 每 30 秒刷新
+
+window.addEventListener("resize", () => cpuChart.resize());
+</script>
 {% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    乾颐堂图表(终极线形图)
+{% endblock title %}
+
+{% block content %}
+    {% load static %}
+    <script src="{% static 'js/echarts.min.js' %}"></script>
+    <script src="{% static 'js/qytang_final_line.js' %}"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+
+
+
+<div class="container-fluid my-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <strong style="color: rebeccapurple">
+                        终极线形图AJAX
+                        <button class="btn btn-sm btn-outline-primary float-end" onClick="updatachart1();">刷新</button>
+                    </strong>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center" style="height: 60vh; min-height: 300px;">
+                    <div id="chart1" class="w-100 h-100" style="min-height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // 加载并渲染接口速率图
+        function updatachart1() {
+            get_json_render_echart_line_if_speed('data/final_line_if_speed/', 'chart1');
+        }
+        // 页面加载时自动渲染一次
+        updatachart1();
+        // 每10秒自动刷新一次
+
+        {% comment %} 
+        setInterval(updatachart1, 10000); 
+        {% endcomment %}
+        
+        // 防抖resize
+        let resizeTimer = null;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                let chart = echarts.getInstanceByDom(document.getElementById('chart1'));
+                if (chart) chart.resize();
+            }, 200);
+        });
+    </script>
+</div>
+{% endblock content %}
