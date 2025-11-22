@@ -66,7 +66,7 @@ def qyt_device_echarts_final_line_if_speed_class(request):
 def final_line_if_speed_data_api(request):
     now = datetime.now()
     num_points = 20
-    legends = ["eth0", "eth1", "eth2"]  # 模拟几个接口
+    legends = ["eth0-up", "eth0-down", "eth1-up", "eth1-down"]  # 模拟几个接口
     datas = []
 
     for name in legends:
