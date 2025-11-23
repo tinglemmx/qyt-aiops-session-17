@@ -4,7 +4,18 @@ from scripts.snmp_collector import collect_snmp_for_device
 from .forms import DeviceForm
 from django.db.models import Q
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required,permission_required
 
+def redirect_no_perm(perm):
+    def decorator(func):
+        def wrapper(request, *args, **kwargs):
+            # print("User perms:", request.user.get_all_permissions())
+            if not request.user.has_perm(perm):
+                messages.error(request, "您没有权限执行此操作")
+                return redirect("device_list")
+            return func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 def collect_once(request):
     devices = DeviceDB.objects.all()
@@ -19,7 +30,16 @@ def collect_once(request):
 
     return render(request, 'devices/collect.html', {'devices': devices, 'metrics': metrics})
 
+'''
+| 动作 | 权限名               |
+| -- | ----------------- |
+| 添加 | `add_devicedb`    |
+| 修改 | `change_devicedb` |
+| 删除 | `delete_devicedb` |
+'''
 
+@redirect_no_perm('devices.add_devicedb')
+@login_required()
 def add_device(request):
     if request.method == "POST":
         form = DeviceForm(request.POST)
@@ -68,7 +88,8 @@ def device_list(request):
         "current_dir": direction,
     })
 
-
+@redirect_no_perm('devices.change_devicedb')
+@login_required()
 def edit_device(request, device_id):
     device = get_object_or_404(DeviceDB, pk=device_id)
 
@@ -82,7 +103,8 @@ def edit_device(request, device_id):
 
     return render(request, "devices/device_form.html", {"form": form, "device": device, "mode": "edit"})
 
-
+@redirect_no_perm('devices.delete_devicedb')
+@login_required()
 def delete_device(request, pk):
     device = get_object_or_404(DeviceDB, pk=pk)
     device.delete()

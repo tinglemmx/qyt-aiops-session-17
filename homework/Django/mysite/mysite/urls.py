@@ -18,10 +18,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from viewers.index import index
+from viewers.my_login import my_login, my_logout
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index, name="index"),
     path('devices/', include('devices.urls')),
     path("dashboard/", include("dashboard.urls")),
+    path('accounts/login/', my_login, name='qyt_login'),     #accounts/login/是固定的url
+    path('accounts/logout/', my_logout, name='qyt_logout'),  #accounts/logout/是固定的url
 ]

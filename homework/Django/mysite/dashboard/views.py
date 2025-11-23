@@ -6,6 +6,8 @@ from devices.models import DeviceMetric, MetricType,DeviceDB,MetricMapping
 import pytz
 from .services.metric_service import MetricService
 import random
+from django.contrib.auth.decorators import login_required
+
 def dashboard(request):
     return render(request, "dashboard/dashboard.html")
 
@@ -42,10 +44,11 @@ def dashboard_data(request):
         mem_avail_data={"x": mem_avail_x, "series": mem_avail_series},
         mem_used_data={"x": mem_used_x, "series": mem_used_serise},
     ))
-
+@login_required()
 def ultimate_line(request):
     return render(request, "dashboard/ultimate_line.html")
 
+@login_required()
 def cpu_data_api(request):
     ms = MetricService(max_points=100)
     cpu_logic_kw = "cpuUsage"
@@ -60,6 +63,7 @@ def cpu_data_api(request):
 def area_simple(request):
     return render(request, "dashboard/area-simple.html")
 
+@login_required()
 def qyt_device_echarts_final_line_if_speed_class(request):
     return render(request, "dashboard/qyt_device_echarts_final_line_if_speed.html")
 
