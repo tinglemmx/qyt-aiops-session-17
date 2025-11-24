@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}上传文件{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">上传文件</h4>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Django 消息提示 -->
+            {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="fileInput" class="form-label">选择文件（支持 doc / docx，允许多文件）</label>
+                    <input type="file" 
+                           id="fileInput" 
+                           name="files" 
+                           class="form-control"
+                           accept=".doc,.docx"
+                           multiple
+                    >
+                </div>
+
+                <!-- 文件列表显示区域 -->
+                <ul id="fileList" class="list-group mb-3"></ul>
+
+                <button type="submit" class="btn btn-success">
+                    上传
+                </button>
+
+                <a href="{% url 'filecenter:list' %}" class="btn btn-secondary ms-2">
+                    返回列表
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// 文件选择后显示列表
+document.getElementById('fileInput').addEventListener('change', function() {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = ''; // 先清空列表
+
+    for (let i = 0; i < this.files.length; i++) {
+        const li = document.createElement('li');
+        li.textContent = this.files[i].name;
+        li.className = 'list-group-item';
+        fileList.appendChild(li);
+    }
+});
+</script>
+{% endblock %}

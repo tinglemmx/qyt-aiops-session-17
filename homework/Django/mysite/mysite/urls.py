@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path,include
 from viewers.index import index
 from viewers.my_login import my_login, my_logout
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,4 +29,7 @@ urlpatterns = [
     path("dashboard/", include("dashboard.urls")),
     path('accounts/login/', my_login, name='qyt_login'),     #accounts/login/是固定的url
     path('accounts/logout/', my_logout, name='qyt_logout'),  #accounts/logout/是固定的url
-]
+    path('filecenter/', include('filecenter.urls'))
+] 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
