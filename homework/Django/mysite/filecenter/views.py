@@ -3,6 +3,7 @@ from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from .models import Document
 from django.contrib import messages
+from urllib.parse import quote
 
 
 ALLOWED_EXT = ["doc", "docx"]
@@ -50,9 +51,28 @@ def file_list(request):
 def download_file(request, pk):
     doc = Document.objects.get(pk=pk)
     response = FileResponse(doc.file.open('rb'))
-    response['Content-Disposition'] = f'attachment; filename="{doc.filename}"'
-    return response
+    
+    filename = doc.filename
 
+    # filename* 用于 Firefox / 支持 UTF-8
+    # filename 用于 Chromium / Edge 的回退
+    try:
+        filename_ascii = filename.encode('ascii')
+        # 如果文件名是纯 ASCII，就不用特殊处理
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    except UnicodeEncodeError:
+        # 中文文件名同时提供 filename* 和 filename
+        response['Content-Disposition'] = (
+            f"attachment; filename=\"download.docx\"; "
+            f"filename*=UTF-8''{quote(filename)}"
+        )
+    return response
+# quote(filename)
+# 将中文或特殊字符 URL 编码
+# 浏览器下载时会正确解析
+# filename* 而不是 filename
+# 支持 UTF-8
+# 避免 Windows 或 Chrome 自动改名成 “下载.docx”
 
 def delete_file(request, pk):
     doc = get_object_or_404(Document, pk=pk)
